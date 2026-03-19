@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#09152A"/>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512">
+      <stop offset="0%" stop-color="#122039"/>
+      <stop offset="100%" stop-color="#09152A"/>
+    </linearGradient>
+  </defs>
+  <!-- Accent bar top -->
+  <rect x="80" y="72" width="352" height="6" rx="3" fill="#FFAD30"/>
+  <!-- S glyph -->
+  <text x="256" y="310" font-family="Georgia,serif" font-size="220" font-weight="700"
+    fill="#E2EEFF" text-anchor="middle">S</text>
+  <!-- Cross symbol -->
+  <rect x="232" y="356" width="48" height="12" rx="6" fill="#00C8FF"/>
+  <rect x="250" y="338" width="12" height="48" rx="6" fill="#00C8FF"/>
+  <!-- Bottom label -->
+  <text x="256" y="448" font-family="'Helvetica Neue',Arial,sans-serif" font-size="42"
+    font-weight="600" fill="#7B9DC0" text-anchor="middle" letter-spacing="8">SIGN</text>
+</svg>
