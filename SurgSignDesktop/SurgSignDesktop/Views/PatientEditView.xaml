@@ -1,0 +1,214 @@
+<UserControl x:Class="SurgSignDesktop.Views.PatientEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:models="clr-namespace:SurgSignDesktop.Models"
+             xmlns:vm="clr-namespace:SurgSignDesktop.ViewModels"
+             Background="{StaticResource BackgroundBrush}"
+             d:DesignHeight="600" d:DesignWidth="800"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="PriorityValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type Type="models:Priority" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="CodeStatusValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type Type="models:CodeStatus" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <Style x:Key="FieldLabel" TargetType="TextBlock" BasedOn="{StaticResource SecondaryTextBlock}">
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  Padding="24,18">
+        <StackPanel DataContext="{Binding SelectedPatient}" MaxWidth="720" HorizontalAlignment="Left">
+
+            <!-- Name + MRN -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="NAME (Last, First)" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource BaseTextBox}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="MRN" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding Mrn, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource BaseTextBox}"
+                             FontFamily="Consolas" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Room + Surgeon -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="ROOM" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding Room, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource BaseTextBox}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="SURGEON" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding Surgeon, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource BaseTextBox}" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Priority + Code Status + Surgery Date -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="PRIORITY" Style="{StaticResource FieldLabel}" />
+                    <ComboBox ItemsSource="{Binding Source={StaticResource PriorityValues}}"
+                              SelectedItem="{Binding Priority}"
+                              Background="{StaticResource Surface2Brush}"
+                              Foreground="{StaticResource TextBrush}"
+                              BorderBrush="{StaticResource BorderBrush}"
+                              Padding="6,4" />
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="CODE STATUS" Style="{StaticResource FieldLabel}" />
+                    <ComboBox ItemsSource="{Binding Source={StaticResource CodeStatusValues}}"
+                              SelectedItem="{Binding CodeStatus}"
+                              Background="{StaticResource Surface2Brush}"
+                              Foreground="{StaticResource TextBrush}"
+                              BorderBrush="{StaticResource BorderBrush}"
+                              Padding="6,4" />
+                </StackPanel>
+                <StackPanel Grid.Column="4">
+                    <TextBlock Text="SURGERY DATE" Style="{StaticResource FieldLabel}" />
+                    <DatePicker SelectedDate="{Binding SurgeryDate}"
+                                Background="{StaticResource Surface2Brush}"
+                                Foreground="{StaticResource TextBrush}"
+                                BorderBrush="{StaticResource BorderBrush}" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Diagnosis -->
+            <StackPanel Margin="0,0,0,10">
+                <TextBlock Text="DIAGNOSIS" Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding Diagnosis, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource BaseTextBox}" />
+            </StackPanel>
+
+            <!-- Procedure -->
+            <StackPanel Margin="0,0,0,10">
+                <TextBlock Text="PROCEDURE" Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding Procedure, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource BaseTextBox}" />
+            </StackPanel>
+
+            <!-- Allergies -->
+            <StackPanel Margin="0,0,0,10">
+                <TextBlock Text="ALLERGIES" Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding Allergies, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource BaseTextBox}" />
+            </StackPanel>
+
+            <!-- Notes -->
+            <StackPanel Margin="0,0,0,14">
+                <TextBlock Text="NOTES" Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource BaseTextBox}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         MinHeight="80"
+                         VerticalScrollBarVisibility="Auto" />
+            </StackPanel>
+
+            <!-- Tasks -->
+            <Border Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="12"
+                    Margin="0,0,0,14">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                                   Text="TASKS"
+                                   Style="{StaticResource FieldLabel}"
+                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Content="+ Add Task"
+                                Style="{StaticResource BaseButton}"
+                                Command="{Binding DataContext.AddTaskCommand,
+                                                  RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding Tasks}"
+                                  Margin="0,8,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:PatientTask}">
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox Grid.Column="0"
+                                              IsChecked="{Binding IsDone}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,8,0"
+                                              Foreground="{StaticResource TextBrush}" />
+                                    <TextBox Grid.Column="1"
+                                             Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource BaseTextBox}"
+                                             VerticalAlignment="Center" />
+                                    <Button Grid.Column="2"
+                                            Content="Remove"
+                                            Style="{StaticResource BaseButton}"
+                                            Margin="8,0,0,0"
+                                            Command="{Binding DataContext.RemoveTaskCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Action bar -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Button Content="Delete Patient"
+                        Command="{Binding DataContext.DeletePatientCommand,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Style="{StaticResource DangerButton}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

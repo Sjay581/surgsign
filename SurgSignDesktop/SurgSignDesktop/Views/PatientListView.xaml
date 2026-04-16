@@ -1,0 +1,179 @@
+<UserControl x:Class="SurgSignDesktop.Views.PatientListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:SurgSignDesktop.Models"
+             xmlns:vm="clr-namespace:SurgSignDesktop.ViewModels"
+             Background="{StaticResource SurfaceBrush}"
+             d:DesignHeight="500" d:DesignWidth="360"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+
+        <!-- Priority → bar color -->
+        <Style x:Key="PriorityBar" TargetType="Rectangle">
+            <Setter Property="Fill" Value="{StaticResource TextSecondaryBrush}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Priority}" Value="{x:Static models:Priority.High}">
+                    <Setter Property="Fill" Value="{StaticResource RedBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Priority}" Value="{x:Static models:Priority.Medium}">
+                    <Setter Property="Fill" Value="{StaticResource AMBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Priority}" Value="{x:Static models:Priority.Low}">
+                    <Setter Property="Fill" Value="{StaticResource GreenBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="PatientRowTemplate" DataType="{x:Type vm:PatientViewModel}">
+            <Grid Background="Transparent" Margin="0,0,0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Rectangle Grid.Column="0"
+                           Width="4"
+                           Style="{StaticResource PriorityBar}" />
+
+                <Border Grid.Column="1"
+                        Background="{StaticResource Surface2Brush}"
+                        CornerRadius="0,6,6,0"
+                        Padding="12,8">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding Name}"
+                                       Foreground="{StaticResource TextBrush}"
+                                       FontWeight="SemiBold"
+                                       FontSize="14"
+                                       TextTrimming="CharacterEllipsis" />
+                            <Border Grid.Column="1"
+                                    Background="{StaticResource BorderBrush}"
+                                    CornerRadius="4"
+                                    Padding="6,2"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Room}"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="11"
+                                           FontFamily="Consolas" />
+                            </Border>
+                        </Grid>
+
+                        <TextBlock Text="{Binding Mrn, StringFormat=MRN {0}}"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="11"
+                                   FontFamily="Consolas"
+                                   Margin="0,3,0,0" />
+
+                        <TextBlock Text="{Binding Diagnosis}"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="12"
+                                   TextTrimming="CharacterEllipsis"
+                                   Margin="0,3,0,0" />
+
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,6,0,0">
+                            <Border Background="{StaticResource BorderBrush}"
+                                    CornerRadius="4"
+                                    Padding="6,2"
+                                    Margin="0,0,6,0"
+                                    Visibility="{Binding PodLabel, Converter={x:Static vm:NullToVisibilityConverter.Instance}}">
+                                <TextBlock Text="{Binding PodLabel}"
+                                           Foreground="{StaticResource AccentBrush}"
+                                           FontSize="11"
+                                           FontFamily="Consolas"
+                                           FontWeight="SemiBold" />
+                            </Border>
+                            <Border Background="{StaticResource BorderBrush}"
+                                    CornerRadius="4"
+                                    Padding="6,2"
+                                    Margin="0,0,6,0">
+                                <TextBlock Text="{Binding CodeStatusLabel}"
+                                           Foreground="{StaticResource GreenBrush}"
+                                           FontSize="11"
+                                           FontFamily="Consolas"
+                                           FontWeight="SemiBold" />
+                            </Border>
+                            <Border Background="{StaticResource BorderBrush}"
+                                    CornerRadius="4"
+                                    Padding="6,2"
+                                    Visibility="{Binding PendingTaskCount, Converter={x:Static vm:ZeroToCollapsedConverter.Instance}}">
+                                <TextBlock Foreground="{StaticResource AMBrush}"
+                                           FontSize="11"
+                                           FontFamily="Consolas"
+                                           FontWeight="SemiBold">
+                                    <Run Text="{Binding PendingTaskCount, Mode=OneWay}" />
+                                    <Run Text=" pending" />
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <ListBox ItemsSource="{Binding Patients}"
+                 SelectedItem="{Binding SelectedPatient}"
+                 ItemTemplate="{StaticResource PatientRowTemplate}"
+                 Background="{StaticResource SurfaceBrush}"
+                 BorderThickness="0"
+                 Padding="12"
+                 HorizontalContentAlignment="Stretch"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border Background="{TemplateBinding Background}"
+                                        Padding="0">
+                                    <ContentPresenter />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{StaticResource BorderBrush}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasPatients}" Value="False">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <TextBlock Text="No patients yet"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       FontSize="14"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,10" />
+            <Button Content="+ Add Patient"
+                    Command="{Binding AddPatientCommand}"
+                    Style="{StaticResource AccentButton}" />
+        </StackPanel>
+    </Grid>
+</UserControl>
