@@ -11,6 +11,8 @@ struct CodeStatusBadgeView: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
                 .background(codeStatus.color, in: Capsule())
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Code status: \(codeStatus.rawValue)")
         }
     }
 }

@@ -8,6 +8,7 @@ struct PatientListView: View {
     @Bindable var viewModel: PatientListViewModel
 
     @State private var isEditingServiceName = false
+    @State private var showingSettings = false
     @FocusState private var serviceNameFieldFocused: Bool
 
     var body: some View {
@@ -43,6 +44,9 @@ struct PatientListView: View {
         }
         .fullScreenCover(isPresented: $viewModel.showingScanner) {
             ScanView()
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView()
         }
         .confirmationDialog(
             "Delete Patient",
@@ -82,6 +86,17 @@ struct PatientListView: View {
                 Spacer()
 
                 ShiftToggleView()
+
+                Button {
+                    showingSettings = true
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                        .font(.title3)
+                        .foregroundStyle(Color.surgTextSecondary)
+                        .padding(8)
+                        .background(Color.surgSurface, in: Circle())
+                }
+                .accessibilityLabel("Settings")
             }
 
             HStack {

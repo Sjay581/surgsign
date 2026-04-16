@@ -13,5 +13,7 @@ struct PriorityBarView: View {
                 bottomTrailingRadius: 0,
                 topTrailingRadius: 0
             ))
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Priority: \(priority.label)")
     }
 }
