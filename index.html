@@ -962,6 +962,12 @@ body {
   justify-content: center;
 }
 
+/* --- Mobile Back Button --- */
+.mobile-back {
+  display: none;
+  margin-bottom: 12px;
+}
+
 /* --- Transitions --- */
 .transition {
   transition: all 0.15s ease;
@@ -1004,6 +1010,10 @@ body {
 
   .app-shell.view-detail .detail-pane {
     height: 100vh;
+  }
+
+  .mobile-back {
+    display: inline-flex;
   }
 
   .fullscreen-view {
@@ -1510,7 +1520,9 @@ function renderHome(app) {
   var patients = getFilteredPatients();
   var sel = S.selectedId ? getPatient(S.selectedId) : null;
 
-  var html = '<div class="app-shell">';
+  var isMobile = window.innerWidth < 960;
+  var viewClass = isMobile ? (sel ? ' view-detail' : ' view-list') : '';
+  var html = '<div class="app-shell' + viewClass + '">';
 
   /* — sidebar — */
   html += '<div class="sidebar">';
@@ -1656,6 +1668,8 @@ function renderPatientDetail(p) {
   else csClass = 'full';
 
   var html = '';
+  html += '<div class="detail-content">';
+  html += '<button class="btn btn-ghost btn-sm mobile-back" id="btn-back-list">← Patient List</button>';
   html += '<div class="detail-header" style="display:flex;justify-content:space-between;align-items:center;">';
   html += '<h2 style="margin:0;">' + escHtml(p.name || 'Unnamed') + '</h2>';
   html += '<div>';
@@ -1721,6 +1735,7 @@ function renderPatientDetail(p) {
   html += '</div>';
 
   html += '</div>'; // detail-body
+  html += '</div>'; // detail-content
   return html;
 }
 
@@ -1729,6 +1744,12 @@ function infoCell(label, value) {
 }
 
 function bindPatientDetailEvents(app, p) {
+  var btnBack = app.querySelector('#btn-back-list');
+  if (btnBack) btnBack.addEventListener('click', function () {
+    S.selectedId = null;
+    render();
+  });
+
   var btnEdit = app.querySelector('#btn-edit-patient');
   if (btnEdit) btnEdit.addEventListener('click', function () {
     S.editingPatient = JSON.parse(JSON.stringify(p));
