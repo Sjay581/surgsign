@@ -1262,7 +1262,7 @@ function encodeQR() {
 }
 
 function decodeQR(str) {
-  if (!str || !str.startsWith('SS2:')) return null;
+  if (!str || typeof str !== 'string' || !str.startsWith('SS2:')) return null;
   try {
     const json = LZString.decompressFromEncodedURIComponent(str.slice(4));
     if (!json) return null;
@@ -1942,9 +1942,9 @@ function renderQRShow(app) {
       var qr = qrcode(0, 'M');
       qr.addData(encoded);
       qr.make();
-      container.innerHTML = qr.createSvgTag(6, 0);
+      container.innerHTML = '<div style="background:#fff;padding:24px;border-radius:12px;display:inline-block;">' + qr.createSvgTag(6, 4) + '</div>';
     } catch (e) {
-      container.innerHTML = '<p style="color:red;">QR generation failed: data may be too large. ' + escHtml(e.message || '') + '</p>';
+      container.innerHTML = '<p style="color:red;">QR generation failed: data may be too large. ' + escHtml(e.message || e || '') + '</p>';
     }
   } else if (container) {
     container.innerHTML = '<p style="opacity:.5;">QR library not loaded.</p>';
