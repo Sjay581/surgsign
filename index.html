@@ -2027,6 +2027,7 @@ function renderQRScan(app) {
     if (!raw) return;
     try {
       var result = decodeQR(raw);
+      if (!result) { alert('Invalid QR data. Make sure you pasted a complete SurgSign QR string starting with SS2:'); return; }
       stopCamera();
       onScan(result);
     } catch (e) {
