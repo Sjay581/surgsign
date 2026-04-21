@@ -1283,41 +1283,36 @@ function decodeQR(str) {
 
 function startCamera(videoEl, onScan) {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert('Camera not available on this device.');
     return;
   }
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+  })
     .then(stream => {
       S.cameraStream = stream;
       videoEl.srcObject = stream;
       videoEl.setAttribute('playsinline', 'true');
       videoEl.play();
+      var scanCanvas = document.createElement('canvas');
+      var scanCtx = scanCanvas.getContext('2d');
       requestAnimationFrame(function tick() {
         if (!S.cameraStream) return;
         if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
-          const canvas = document.createElement('canvas');
-          canvas.width = videoEl.videoWidth;
-          canvas.height = videoEl.videoHeight;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(videoEl, 0, 0);
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imageData.data, canvas.width, canvas.height);
+          scanCanvas.width = videoEl.videoWidth;
+          scanCanvas.height = videoEl.videoHeight;
+          scanCtx.drawImage(videoEl, 0, 0);
+          var imageData = scanCtx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
+          var code = jsQR(imageData.data, scanCanvas.width, scanCanvas.height);
           if (code && code.data) {
-            const result = decodeQR(code.data);
-            if (result) {
-              stopCamera();
-              onScan(result);
-              return;
-            }
+            stopCamera();
+            onScan(code.data);
+            return;
           }
         }
         requestAnimationFrame(tick);
       });
     })
-    .catch(err => {
-      console.error('Camera error:', err);
-      alert('Could not access camera: ' + err.message);
-    });
+    .catch(function() {});
 }
 
 function stopCamera() {
@@ -1919,32 +1914,59 @@ function renderQRShow(app) {
   html += '<button class="btn btn-ghost" id="qr-done">Done</button>';
   html += '</div>';
 
-  html += '<div style="max-width:480px;margin:0 auto;padding:1rem;text-align:center;">';
+  html += '<div style="max-width:520px;margin:0 auto;padding:1rem;text-align:center;">';
   html += '<p>';
   html += '<span class="badge badge-shift ' + shiftCls + '">' + escHtml((S.shift || 'AM').toUpperCase()) + '</span> ';
   if (S.service) html += escHtml(S.service) + ' &mdash; ';
   html += S.patients.length + ' patient' + (S.patients.length !== 1 ? 's' : '');
   html += '</p>';
 
-  html += '<div class="qr-container" id="qr-container" style="margin:1.5rem auto;"></div>';
+  html += '<div id="qr-container" style="margin:1.5rem auto;background:#fff;padding:32px;border-radius:12px;display:inline-block;"></div>';
 
   html += '<div class="qr-info" style="margin-bottom:1rem;font-size:.85em;opacity:.7;">Payload: ' + byteLen + ' bytes</div>';
-  html += '<button class="btn btn-primary btn-sm" id="btn-copy-qr">Copy to Clipboard</button>';
+
+  html += '<div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;">';
+  html += '<button class="btn btn-primary" id="btn-copy-qr">Copy Handoff Data</button>';
+  html += '</div>';
+
+  html += '<p style="font-size:.8em;opacity:.5;margin-top:1rem;">On the receiving device, open SurgSign and tap Scan or paste the copied data.</p>';
   html += '</div>';
   html += '</div>';
 
   app.innerHTML = html;
 
-  /* render QR code */
   var container = app.querySelector('#qr-container');
   if (container && typeof qrcode === 'function') {
     try {
-      var qr = qrcode(0, 'M');
+      var qr = qrcode(0, 'L');
       qr.addData(encoded);
       qr.make();
-      container.innerHTML = '<div style="background:#fff;padding:24px;border-radius:12px;display:inline-block;">' + qr.createSvgTag(6, 4) + '</div>';
+      var moduleCount = qr.getModuleCount();
+      var cellSize = Math.max(4, Math.floor(360 / moduleCount));
+      var margin = 4;
+      var size = moduleCount * cellSize + margin * 2 * cellSize;
+      var canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = '#000000';
+      for (var r = 0; r < moduleCount; r++) {
+        for (var c = 0; c < moduleCount; c++) {
+          if (qr.isDark(r, c)) {
+            ctx.fillRect((c + margin) * cellSize, (r + margin) * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+      var img = document.createElement('img');
+      img.src = canvas.toDataURL('image/png');
+      img.style.cssText = 'width:100%;max-width:' + size + 'px;image-rendering:pixelated;';
+      img.alt = 'SurgSign QR Code';
+      container.innerHTML = '';
+      container.appendChild(img);
     } catch (e) {
-      container.innerHTML = '<p style="color:red;">QR generation failed: data may be too large. ' + escHtml(e.message || e || '') + '</p>';
+      container.innerHTML = '<p style="color:var(--red);">QR generation failed: data may be too large. ' + escHtml(e.message || e || '') + '</p>';
     }
   } else if (container) {
     container.innerHTML = '<p style="opacity:.5;">QR library not loaded.</p>';
@@ -1956,10 +1978,11 @@ function renderQRShow(app) {
   app.querySelector('#btn-copy-qr').addEventListener('click', function () {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(encoded).then(function () {
-        alert('Copied to clipboard.');
+        var btn = app.querySelector('#btn-copy-qr');
+        if (btn) { btn.textContent = 'Copied!'; setTimeout(function() { btn.textContent = 'Copy Handoff Data'; }, 2000); }
       });
     } else {
-      prompt('Copy the QR data below:', encoded);
+      prompt('Copy the handoff data below:', encoded);
     }
   });
 }
@@ -1970,26 +1993,32 @@ function renderQRScan(app) {
   var html = '<div class="fullscreen-view">';
   html += '<div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;padding:1rem;">';
   html += '<button class="btn btn-ghost" id="scan-back">← Back</button>';
-  html += '<strong>Scan QR Code</strong>';
+  html += '<strong>Receive Handoff</strong>';
   html += '<span></span>';
   html += '</div>';
 
   html += '<div style="max-width:480px;margin:0 auto;padding:1rem;text-align:center;">';
-  html += '<p>Point camera at a SurgSign QR code</p>';
-  html += '<div class="scan-preview" style="margin:1rem auto;">';
-  html += '<video id="scan-video" autoplay playsinline style="width:100%;max-width:400px;border-radius:8px;background:#000;"></video>';
+
+  html += '<div class="detail-section" style="margin-bottom:1.5rem;">';
+  html += '<h3 style="margin-bottom:.75rem;">Paste Handoff Data</h3>';
+  html += '<p style="font-size:.85em;opacity:.7;margin-bottom:.75rem;">On the sending device, tap "Copy Handoff Data", then paste here.</p>';
+  html += '<button class="btn btn-primary" id="btn-paste-clipboard" style="width:100%;margin-bottom:.75rem;">Paste from Clipboard</button>';
+  html += '<textarea class="textarea-field" id="manual-qr-input" rows="3" placeholder="Or tap here and paste manually (SS2:...)" style="width:100%;font-size:12px;"></textarea>';
+  html += '<button class="btn btn-primary btn-sm" id="btn-manual-import" style="margin-top:.5rem;">Import Pasted Data</button>';
   html += '</div>';
 
-  html += '<hr style="margin:1.5rem 0;opacity:.2;">';
-  html += '<p style="font-size:.85em;opacity:.7;">Or enter QR data manually:</p>';
-  html += '<textarea class="textarea-field" id="manual-qr-input" rows="4" placeholder="Paste QR string here…" style="width:100%;"></textarea>';
-  html += '<button class="btn btn-primary btn-sm" id="btn-manual-import" style="margin-top:.5rem;">Import</button>';
+  html += '<div class="detail-section">';
+  html += '<h3 style="margin-bottom:.75rem;">Scan QR Code</h3>';
+  html += '<p id="camera-status" style="font-size:.85em;opacity:.7;margin-bottom:.75rem;">Starting camera...</p>';
+  html += '<div class="scan-preview" style="margin:0 auto;">';
+  html += '<video id="scan-video" autoplay playsinline style="width:100%;max-width:400px;border-radius:8px;background:#000;min-height:200px;"></video>';
+  html += '</div>';
+  html += '</div>';
+
   html += '</div>';
   html += '</div>';
 
   app.innerHTML = html;
-
-  var videoEl = app.querySelector('#scan-video');
 
   function onScan(result) {
     if (result && result.patients) {
@@ -2003,18 +2032,33 @@ function renderQRScan(app) {
       S.selectedId = S.patients.length ? S.patients[0].id : null;
       save();
       navigate('home');
+    } else {
+      alert('No patient data found in the pasted content.');
     }
   }
 
-  if (videoEl) {
+  function importFromString(raw) {
+    if (!raw || !raw.trim()) { alert('Nothing to import. Copy the handoff data from the sending device first.'); return; }
+    raw = raw.trim();
+    var result = decodeQR(raw);
+    if (!result) { alert('Could not read handoff data. Make sure the full string starting with SS2: was copied.'); return; }
+    stopCamera();
+    onScan(result);
+  }
+
+  var videoEl = app.querySelector('#scan-video');
+  var statusEl = app.querySelector('#camera-status');
+  if (videoEl && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     startCamera(videoEl, function (rawData) {
-      try {
-        var result = typeof rawData === 'string' ? decodeQR(rawData) : rawData;
-        onScan(result);
-      } catch (e) {
-        /* ignore bad scans */
-      }
+      var result = typeof rawData === 'string' ? decodeQR(rawData) : rawData;
+      if (result) onScan(result);
     });
+    setTimeout(function() {
+      if (S.cameraStream && statusEl) statusEl.textContent = 'Camera active — point at QR code';
+      else if (statusEl) statusEl.textContent = 'Camera unavailable — use paste method above.';
+    }, 2000);
+  } else if (statusEl) {
+    statusEl.textContent = 'Camera not available — use paste method above.';
   }
 
   app.querySelector('#scan-back').addEventListener('click', function () {
@@ -2022,17 +2066,21 @@ function renderQRScan(app) {
     navigate('home');
   });
 
-  app.querySelector('#btn-manual-import').addEventListener('click', function () {
-    var raw = app.querySelector('#manual-qr-input').value.trim();
-    if (!raw) return;
-    try {
-      var result = decodeQR(raw);
-      if (!result) { alert('Invalid QR data. Make sure you pasted a complete SurgSign QR string starting with SS2:'); return; }
-      stopCamera();
-      onScan(result);
-    } catch (e) {
-      alert('Failed to parse QR data: ' + (e.message || 'Unknown error'));
+  app.querySelector('#btn-paste-clipboard').addEventListener('click', function () {
+    if (navigator.clipboard && navigator.clipboard.readText) {
+      navigator.clipboard.readText().then(function (text) {
+        importFromString(text);
+      }).catch(function () {
+        alert('Could not read clipboard. Tap the text box below, long-press to paste, then tap Import.');
+      });
+    } else {
+      alert('Clipboard not available. Tap the text box below, long-press to paste, then tap Import.');
     }
+  });
+
+  app.querySelector('#btn-manual-import').addEventListener('click', function () {
+    var raw = app.querySelector('#manual-qr-input').value;
+    importFromString(raw);
   });
 }
 
