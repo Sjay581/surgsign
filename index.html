@@ -1,938 +1,2120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SurgSign">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#09152A">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.svg">
-<link rel="apple-touch-startup-image" href="icon.svg">
-<title>SurgSign</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-:root{
-  --bg:#09152A;--surface:#122039;--surface2:#1C2F4A;--surface3:#243B5C;
-  --border:#2A4468;--text:#E2EEFF;--text2:#7B9DC0;--text3:#3E6080;
-  --accent:#00C8FF;--accent-dim:rgba(0,200,255,0.12);
-  --am:#FFAD30;--pm:#7B8EF7;
-  --red:#FF4538;--green:#2ED44A;--amber:#FFAD30;
-  --font-body:'DM Sans',sans-serif;--font-mono:'IBM Plex Mono',monospace;
-  --font-display:'DM Serif Display',serif;
-  --nav-h:72px;--safe-b:env(safe-area-inset-bottom,0px);
-}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);overflow:hidden;}
-#app{max-width:480px;margin:0 auto;height:100vh;position:relative;overflow:hidden;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#09152A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SurgSign">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="Surgical Rounding & Handoff Tool">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <title>SurgSign — Surgical Rounding</title>
+  <style>
+/* ============================================================
+   SurgSign - Surgical Rounding PWA
+   Dark-themed, desktop-first stylesheet
+   ============================================================ */
 
-/* ─── SCREENS ─── */
-.screen,.modal-screen{
-  position:absolute;inset:0;display:flex;flex-direction:column;
-  background:var(--bg);overflow:hidden;
-}
-.screen{animation:fadeIn .2s ease;}
-.modal-screen{animation:slideUp .22s cubic-bezier(.22,1,.36,1);}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-/* ─── HEADER ─── */
-.app-header{
-  background:var(--surface);padding:16px 20px 12px;
-  border-bottom:2px solid var(--am);position:relative;z-index:10;flex-shrink:0;
-}
-.header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
-.app-title{font-family:var(--font-display);font-size:22px;letter-spacing:.3px;}
-.header-service{font-size:11px;color:var(--text2);margin-top:2px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;}
-.header-meta{display:flex;justify-content:space-between;}
-.header-date{font-size:12px;color:var(--text3);}
-.patient-count{font-size:12px;color:var(--text2);font-family:var(--font-mono);}
-
-/* ─── SHIFT TOGGLE ─── */
-.shift-toggle{display:flex;background:var(--bg);border-radius:8px;padding:3px;gap:2px;}
-.shift-btn{
-  padding:6px 14px;border-radius:6px;border:none;font-size:13px;font-weight:600;
-  font-family:var(--font-body);cursor:pointer;color:var(--text3);background:transparent;
-  transition:all .18s;letter-spacing:.5px;
-}
-.shift-btn.am-on{background:var(--am);color:#09152A;}
-.shift-btn.pm-on{background:var(--pm);color:#09152A;}
-
-/* ─── PATIENT LIST ─── */
-.patient-list{
-  flex:1;overflow-y:auto;
-  padding:12px 16px calc(var(--nav-h) + var(--safe-b) + 16px);
-}
-.patient-list::-webkit-scrollbar{width:3px;}
-.patient-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-
-/* ─── PATIENT CARD ─── */
-.patient-card{
-  background:var(--surface);border-radius:12px;margin-bottom:10px;
-  display:flex;overflow:hidden;cursor:pointer;
-  border:1px solid var(--border);
-  transition:transform .12s,background .12s;
-}
-.patient-card:active{transform:scale(.98);background:var(--surface2);}
-.card-bar{width:4px;flex-shrink:0;}
-.bar-high{background:var(--red);}
-.bar-medium{background:var(--amber);}
-.bar-low{background:var(--green);}
-.bar-stable{background:var(--text3);}
-.card-body{flex:1;padding:12px 14px;}
-.card-row1{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;}
-.pt-name{font-size:16px;font-weight:600;color:var(--text);}
-.room-badge{
-  background:var(--surface2);color:var(--text2);
-  font-size:11px;font-family:var(--font-mono);
-  padding:3px 8px;border-radius:6px;font-weight:500;flex-shrink:0;margin-left:8px;
-}
-.mrn-line{font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-bottom:4px;}
-.dx-line{font-size:13px;color:var(--text2);margin-bottom:7px;line-height:1.4;}
-.card-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.code-badge{font-size:11px;font-weight:600;font-family:var(--font-mono);}
-.code-full{color:var(--green);}
-.code-dnr{color:var(--red);}
-.code-other{color:var(--amber);}
-.tasks-badge{font-size:11px;color:var(--amber);background:rgba(255,173,48,.12);padding:2px 8px;border-radius:10px;}
-.all-done{font-size:11px;color:var(--green);}
-.pod-badge{
-  font-family:var(--font-mono);font-size:13px;font-weight:600;
-  padding:3px 10px;border-radius:6px;flex-shrink:0;letter-spacing:.3px;
-}
-.pod-badge.pod-early{background:rgba(0,200,255,.13);color:var(--accent);}
-.pod-badge.pod-mid{background:rgba(46,212,74,.12);color:var(--green);}
-.pod-badge.pod-late{background:rgba(123,142,247,.13);color:#7B8EF7;}
-.pod-badge.pod-preop{background:rgba(255,173,48,.13);color:var(--amber);}
-.pod-preview{
-  margin-top:6px;display:inline-block;
-  font-size:13px;font-weight:600;font-family:var(--font-mono);
-  color:var(--accent);background:var(--accent-dim);
-  border-radius:6px;padding:4px 12px;
+/* --- Reset --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* ─── EMPTY STATE ─── */
-.empty-state{text-align:center;padding:70px 20px;color:var(--text3);}
-.empty-icon{font-size:52px;margin-bottom:16px;opacity:.6;}
-.empty-state p{font-size:15px;margin-bottom:20px;color:var(--text2);}
-
-/* ─── BOTTOM NAV ─── */
-.bottom-nav{
-  position:absolute;bottom:0;left:0;right:0;
-  background:var(--surface);border-top:1px solid var(--border);
-  display:flex;align-items:stretch;padding:10px 12px calc(var(--safe-b) + 10px);gap:8px;z-index:20;
-}
-.nav-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;padding:7px 4px;
-  border:1px solid var(--border);background:var(--surface2);
-  border-radius:10px;color:var(--text2);font-size:11px;
-  font-family:var(--font-body);cursor:pointer;transition:all .15s;
-  min-height:54px;
-}
-.nav-btn:active{background:var(--surface3);}
-.nav-btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);flex:1.3;}
-.nav-btn:disabled{opacity:.35;cursor:not-allowed;}
-.nav-icon{font-size:22px;line-height:1;}
-
-/* ─── MODAL HEADER ─── */
-.modal-header{
-  display:flex;align-items:center;padding:16px 20px;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  gap:12px;flex-shrink:0;
-}
-.modal-back{
-  width:36px;height:36px;border-radius:50%;border:1px solid var(--border);
-  background:var(--surface2);color:var(--text);font-size:18px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.modal-title{font-size:17px;font-weight:600;flex:1;}
-
-/* ─── FORM ─── */
-.modal-body{flex:1;overflow-y:auto;padding:16px 20px 24px;}
-.modal-body::-webkit-scrollbar{width:3px;}
-.modal-body::-webkit-scrollbar-thumb{background:var(--border);}
-
-.form-section{margin-bottom:22px;}
-.form-label-group{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;}
-.form-row{margin-bottom:12px;}
-.form-label{font-size:12px;color:var(--text2);margin-bottom:5px;display:block;font-weight:500;}
-.form-input,.form-select,.form-textarea{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;color:var(--text);font-size:15px;padding:10px 12px;
-  font-family:var(--font-body);outline:none;transition:border-color .18s;
-  -webkit-appearance:none;
-}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);}
-.form-input.mono{font-family:var(--font-mono);font-size:14px;}
-.form-select option{background:var(--surface2);}
-.form-textarea{resize:none;height:80px;line-height:1.5;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-
-/* ─── TASK LIST ─── */
-.task-item{
-  display:flex;align-items:center;gap:10px;background:var(--surface2);
-  border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;
-}
-.task-item.done .task-text{text-decoration:line-through;color:var(--text3);}
-.task-check{
-  background:none;border:1.5px solid var(--text3);color:var(--green);
-  width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:11px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;
-}
-.task-item.done .task-check{border-color:var(--green);background:rgba(46,212,74,.15);}
-.task-text{flex:1;font-size:14px;color:var(--text);line-height:1.4;}
-.task-remove{background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;line-height:1;padding:0 2px;transition:color .15s;}
-.task-remove:hover{color:var(--red);}
-.task-add-row{display:flex;gap:8px;margin-top:10px;}
-.task-add-row .form-input{flex:1;}
-.task-add-btn{
-  background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);
-  border-radius:8px;padding:10px 16px;font-size:22px;cursor:pointer;flex-shrink:0;transition:all .15s;
-}
-.task-add-btn:active{background:rgba(0,200,255,.25);}
-.no-tasks{color:var(--text3);font-size:13px;text-align:center;padding:14px;}
-
-/* ─── FORM ACTIONS ─── */
-.form-actions{
-  display:flex;gap:10px;padding:14px 20px calc(var(--safe-b) + 10px);
-  background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;
-}
-.btn-primary{
-  flex:1;background:var(--accent);color:#09152A;border:none;
-  border-radius:10px;padding:14px;font-size:15px;font-weight:600;
-  cursor:pointer;font-family:var(--font-body);transition:opacity .15s;
-}
-.btn-primary:active{opacity:.85;}
-.btn-secondary{
-  background:var(--surface2);color:var(--text2);border:1px solid var(--border);
-  border-radius:10px;padding:14px 18px;font-size:15px;cursor:pointer;
-  font-family:var(--font-body);transition:background .15s;
-}
-.btn-secondary:active{background:var(--surface3);}
-.btn-danger{
-  background:rgba(255,69,56,.12);color:var(--red);border:1px solid rgba(255,69,56,.4);
-  border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;
-  cursor:pointer;font-family:var(--font-body);
+html, body {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* ─── QR SHOW ─── */
-.qr-container{display:flex;flex-direction:column;align-items:center;padding:28px 20px;text-align:center;}
-.qr-box{background:#fff;border-radius:16px;padding:16px;margin:20px 0;line-height:0;}
-.qr-info{color:var(--text2);font-size:14px;line-height:1.6;}
-.qr-meta{font-family:var(--font-mono);font-size:12px;color:var(--text3);margin-top:10px;}
-.qr-warning{
-  margin-top:16px;background:rgba(255,173,48,.08);border:1px solid rgba(255,173,48,.25);
-  border-radius:8px;padding:12px;font-size:12px;color:var(--amber);line-height:1.5;
+img, svg, video, canvas {
+  display: block;
+  max-width: 100%;
 }
 
-/* ─── QR SCAN ─── */
-.scan-wrap{position:relative;width:100%;background:#000;flex-shrink:0;}
-#scan-video{width:100%;display:block;max-height:55vh;object-fit:cover;}
-#scan-canvas{display:none;}
-.scan-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
-.scan-frame{
-  width:220px;height:220px;border-radius:16px;
-  box-shadow:0 0 0 9999px rgba(0,0,0,.55);position:relative;
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
 }
-.sc{position:absolute;width:26px;height:26px;border-color:var(--accent);border-style:solid;}
-.sc-tl{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
-.sc-tr{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
-.sc-bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
-.sc-br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.scan-line{
-  position:absolute;left:4px;right:4px;height:2px;background:var(--accent);
-  border-radius:1px;top:50%;animation:scanMove 2s ease-in-out infinite;
-}
-@keyframes scanMove{0%{top:10%}50%{top:90%}100%{top:10%}}
-.scan-hint{padding:20px;text-align:center;color:var(--text2);font-size:14px;flex:1;}
-.scan-error{color:var(--red);font-size:13px;padding:12px 20px;text-align:center;line-height:1.6;}
 
-/* ─── SCAN PREVIEW ─── */
-.scan-preview-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;}
-.scan-preview{
-  background:var(--surface);border:1px solid var(--green);
-  border-radius:14px;padding:24px 20px;width:100%;text-align:center;
+button {
+  border: none;
+  background: none;
 }
-.preview-check{font-size:44px;margin-bottom:12px;display:block;}
-.scan-preview h3{font-size:20px;margin-bottom:12px;color:var(--green);}
-.scan-preview p{color:var(--text2);font-size:14px;margin-bottom:6px;line-height:1.5;}
-.scan-preview strong{color:var(--text);}
-.preview-pt-count{
-  font-size:28px;font-weight:600;color:var(--accent);font-family:var(--font-mono);
-  display:block;margin:12px 0;
-}
-.preview-actions{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
 
-/* ─── DISCLAIMER ─── */
-.disclaimer-wrap{
-  position:fixed;inset:0;background:rgba(9,21,42,.97);
-  display:flex;align-items:center;justify-content:center;z-index:200;padding:24px;
+a {
+  color: inherit;
+  text-decoration: none;
 }
-.disclaimer-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:20px;padding:30px 26px;max-width:380px;width:100%;text-align:center;
-}
-.d-icon{font-size:44px;margin-bottom:12px;display:block;}
-.disclaimer-card h1{font-family:var(--font-display);font-size:30px;margin-bottom:4px;}
-.d-sub{color:var(--text2);font-size:14px;margin-bottom:20px;}
-.d-divider{height:1px;background:var(--border);margin:18px 0;}
-.d-text{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;}
-.d-warn{
-  color:var(--amber);background:rgba(255,173,48,.08);
-  border:1px solid rgba(255,173,48,.2);padding:12px;border-radius:8px;
-  font-size:12px;line-height:1.6;margin-bottom:16px;
-}
-.disclaimer-card .btn-primary{border-radius:12px;font-size:16px;padding:15px;}
 
-/* ─── SERVICE EDIT ─── */
-.service-row{display:flex;align-items:center;gap:8px;}
-.service-edit-input{
-  flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);
-  color:var(--text2);font-size:11px;font-weight:500;letter-spacing:.8px;
-  text-transform:uppercase;font-family:var(--font-body);outline:none;padding:2px 0;
+ul, ol {
+  list-style: none;
 }
-.service-edit-input:focus{border-bottom-color:var(--accent);}
 
-/* ─── TOAST ─── */
-#toast{
-  position:fixed;bottom:110px;left:50%;transform:translateX(-50%);
-  background:var(--accent);color:#09152A;padding:10px 22px;border-radius:20px;
-  font-weight:600;font-size:14px;z-index:999;transition:opacity .3s;
-  pointer-events:none;opacity:0;white-space:nowrap;
+/* --- Custom Properties --- */
+:root {
+  --bg: #09152A;
+  --surface: #122039;
+  --surface2: #1C2F4A;
+  --surface3: #243B5C;
+  --border: #2A4468;
+  --text: #E2EEFF;
+  --text2: #7B9DC0;
+  --text3: #3E6080;
+  --accent: #00C8FF;
+  --accent-hover: #00B0E0;
+  --am: #FFAD30;
+  --pm: #7B8EF7;
+  --red: #FF4538;
+  --green: #2ED44A;
+  --amber: #FFAD30;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Cascadia Code", "Fira Code", Consolas, monospace;
 }
-</style>
+
+/* --- Base --- */
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* --- Custom Scrollbar (Webkit) --- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
+}
+
+/* --- App Shell (Desktop Grid) --- */
+.app-shell {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* --- Fullscreen View --- */
+.fullscreen-view {
+  grid-column: 1 / -1;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
+}
+
+.sidebar-header {
+  padding: 20px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-header .app-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.sidebar-header .service-name {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+
+.sidebar-header .action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* --- Search Box --- */
+.search-box {
+  position: relative;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.search-box .search-icon {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.search-box input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 9px 14px 9px 38px;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.search-box input::placeholder {
+  color: var(--text3);
+}
+
+.search-box input:focus {
+  border-color: var(--accent);
+}
+
+/* --- Patient Card --- */
+.patient-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px 12px 18px;
+  margin-bottom: 4px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-left: 4px solid transparent;
+}
+
+.patient-card:hover {
+  background: var(--surface2);
+}
+
+.patient-card.active {
+  background: var(--surface3);
+  border-left-color: var(--accent);
+}
+
+.patient-card .patient-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.patient-card .patient-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.patient-card .patient-meta {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.patient-card .patient-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* --- Priority Bar --- */
+.priority-bar {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  border-radius: 0 2px 2px 0;
+}
+
+.priority-bar.high {
+  background: var(--red);
+}
+
+.priority-bar.medium {
+  background: var(--amber);
+}
+
+.priority-bar.low {
+  background: var(--accent);
+}
+
+.priority-bar.stable {
+  background: var(--green);
+}
+
+/* patient-card with priority uses the bar */
+.patient-card.priority-high {
+  border-left-color: var(--red);
+}
+
+.patient-card.priority-medium {
+  border-left-color: var(--amber);
+}
+
+.patient-card.priority-low {
+  border-left-color: var(--accent);
+}
+
+.patient-card.priority-stable {
+  border-left-color: var(--green);
+}
+
+.patient-card.active.priority-high {
+  border-left-color: var(--red);
+}
+
+.patient-card.active.priority-medium {
+  border-left-color: var(--amber);
+}
+
+.patient-card.active.priority-low {
+  border-left-color: var(--accent);
+}
+
+.patient-card.active.priority-stable {
+  border-left-color: var(--green);
+}
+
+/* --- Detail Pane --- */
+.detail-pane {
+  background: var(--bg);
+  overflow-y: auto;
+  height: 100vh;
+  padding: 0;
+}
+
+.detail-content {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 28px 32px;
+}
+
+/* --- Detail Header --- */
+.detail-header {
+  margin-bottom: 24px;
+}
+
+.detail-header .patient-name-large {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-header .patient-detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text2);
+  flex-wrap: wrap;
+}
+
+.detail-header .patient-detail-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.detail-header .edit-btn {
+  margin-left: auto;
+}
+
+/* --- Detail Section --- */
+.detail-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.detail-section .section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text2);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-section .section-body {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.detail-section .section-body p {
+  margin-bottom: 8px;
+}
+
+.detail-section .section-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Task Items --- */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.task-item:hover {
+  background: var(--surface2);
+}
+
+.task-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.task-item input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.task-item input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.task-item .task-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text);
+  transition: all 0.15s ease;
+}
+
+.task-item.done .task-text {
+  text-decoration: line-through;
+  color: var(--text3);
+}
+
+.task-item .task-delete {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.task-item:hover .task-delete {
+  opacity: 1;
+}
+
+.task-item .task-delete:hover {
+  color: var(--red);
+  background: rgba(255, 69, 56, 0.1);
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-danger {
+  background: var(--red);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #e63d32;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text2);
+}
+
+.btn-ghost:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--text2);
+  background: transparent;
+  border: none;
+  flex-shrink: 0;
+}
+
+.btn-icon:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* --- Form Controls --- */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row > * {
+  flex: 1;
+}
+
+.input-field {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input-field::placeholder {
+  color: var(--text3);
+}
+
+.input-field:focus {
+  border-color: var(--accent);
+}
+
+.select-field {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237B9DC0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.select-field:focus {
+  border-color: var(--accent);
+}
+
+.textarea-field {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  font-family: var(--font-sans);
+  transition: border-color 0.15s ease;
+}
+
+.textarea-field::placeholder {
+  color: var(--text3);
+}
+
+.textarea-field:focus {
+  border-color: var(--accent);
+}
+
+/* --- Badges --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+/* POD badges */
+.badge-pod {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.badge-pod.pre-op {
+  color: var(--amber);
+  background: rgba(255, 173, 48, 0.15);
+}
+
+.badge-pod.pod-0 {
+  color: var(--red);
+  background: rgba(255, 69, 56, 0.15);
+}
+
+.badge-pod.pod-low {
+  color: var(--green);
+  background: rgba(46, 212, 74, 0.15);
+}
+
+.badge-pod.pod-mid {
+  color: var(--accent);
+  background: rgba(0, 200, 255, 0.15);
+}
+
+.badge-pod.pod-high {
+  color: var(--text2);
+  background: rgba(123, 157, 192, 0.15);
+}
+
+/* Shift badge */
+.badge-shift {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.badge-shift.am {
+  color: var(--am);
+  background: rgba(255, 173, 48, 0.15);
+}
+
+.badge-shift.pm {
+  color: var(--pm);
+  background: rgba(123, 142, 247, 0.15);
+}
+
+/* Code status badge */
+.badge-code-status {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.badge-code-status.dnr,
+.badge-code-status.dni,
+.badge-code-status.dnr-dni,
+.badge-code-status.comfort {
+  color: var(--red);
+  background: rgba(255, 69, 56, 0.15);
+}
+
+.badge-code-status.full-code {
+  color: var(--green);
+  background: rgba(46, 212, 74, 0.15);
+}
+
+/* Priority badge */
+.badge-priority {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.badge-priority.high {
+  color: var(--red);
+  background: rgba(255, 69, 56, 0.15);
+}
+
+.badge-priority.medium {
+  color: var(--amber);
+  background: rgba(255, 173, 48, 0.15);
+}
+
+.badge-priority.low {
+  color: var(--accent);
+  background: rgba(0, 200, 255, 0.15);
+}
+
+.badge-priority.stable {
+  color: var(--green);
+  background: rgba(46, 212, 74, 0.15);
+}
+
+/* --- QR Views --- */
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.qr-container .qr-image-wrap {
+  background: #fff;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  display: inline-block;
+}
+
+.qr-container .qr-image-wrap img,
+.qr-container .qr-image-wrap canvas {
+  display: block;
+}
+
+.qr-info {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text2);
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+.scan-preview {
+  width: 100%;
+  max-width: 480px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.scan-preview video {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-lg);
+}
+
+/* --- Settings View --- */
+.settings-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.settings-section .settings-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.settings-section.danger-zone {
+  border-color: rgba(255, 69, 56, 0.3);
+}
+
+.settings-section.danger-zone .settings-section-title {
+  color: var(--red);
+}
+
+/* --- Empty State --- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text3);
+}
+
+.empty-state .empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state .empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.empty-state .empty-subtitle {
+  font-size: 13px;
+  color: var(--text3);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* --- Toolbar --- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  gap: 8px;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* --- Modal / Confirm Dialog --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.modal-box .modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.modal-box .modal-body {
+  font-size: 14px;
+  color: var(--text2);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.modal-box .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* --- Utility --- */
+.hidden {
+  display: none !important;
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+}
+
+.text-muted {
+  color: var(--text3);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-red {
+  color: var(--red);
+}
+
+.text-green {
+  color: var(--green);
+}
+
+.text-amber {
+  color: var(--amber);
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Transitions --- */
+.transition {
+  transition: all 0.15s ease;
+}
+
+/* --- Responsive (Mobile < 960px) --- */
+@media (max-width: 959px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-pane {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .detail-content {
+    padding: 20px 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* On mobile, the detail-pane or sidebar takes full screen based on view state */
+  .app-shell.view-list .detail-pane {
+    display: none;
+  }
+
+  .app-shell.view-detail .sidebar {
+    display: none;
+  }
+
+  .app-shell.view-detail .detail-pane {
+    height: 100vh;
+  }
+
+  .fullscreen-view {
+    grid-column: 1;
+  }
+}
+
+/* --- Print Styles --- */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .sidebar,
+  .sidebar-header,
+  .search-box,
+  .toolbar,
+  .btn,
+  .btn-icon,
+  .modal-overlay {
+    display: none !important;
+  }
+
+  .app-shell {
+    display: block;
+    height: auto;
+  }
+
+  .detail-pane {
+    height: auto;
+    overflow: visible;
+    background: #fff;
+  }
+
+  .detail-section {
+    background: #fff;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .detail-header .patient-name-large {
+    color: #000;
+  }
+
+  .badge,
+  .badge-pod,
+  .badge-shift,
+  .badge-code-status,
+  .badge-priority {
+    border: 1px solid #999;
+    background: transparent;
+    color: #000;
+  }
+
+  .task-item.done .task-text {
+    color: #999;
+  }
+}
+  </style>
 </head>
 <body>
-<div id="toast"></div>
-<div id="app"></div>
+  <div id="app"></div>
 
-<script>
-/* ═══════════════════════════════
-   UTILITIES
-═══════════════════════════════ */
-const uid=()=>'_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
-const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-const fmtDate=()=>new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',year:'numeric'});
-let toastTimer=null;
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.style.opacity='1';
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.style.opacity='0',2200);
-}
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
-/* ═══════════════════════════════
-   STATE
-═══════════════════════════════ */
-let S={
-  view:'disclaimer',
-  patients:[],
-  editingPatient:null,
-  shift:'AM',
-  service:'General Surgery',
-  cameraStream:null,
-  scanPreview:null,
+  <script>
+'use strict';
+
+const S = {
+  view: 'disclaimer',
+  patients: [],
+  selectedId: null,
+  editingPatient: null,
+  shift: 'AM',
+  service: 'General Surgery',
+  search: '',
+  disclaimerAccepted: false,
+  cameraStream: null,
 };
-let formTasks=[];
 
-/* ═══════════════════════════════
-   DEMO DATA
-═══════════════════════════════ */
-(function initDemo(){
-  S.patients=[
-    {id:uid(),name:'Morrison, James R.',mrn:'4829301',room:'4B-12',surgeon:'Dr. Chen',
-     diagnosis:'Perforated appendicitis',procedure:'Lap appendectomy',
-     surgeryDate:dateOffset(-1),
-     codeStatus:'Full Code',allergies:'PCN, Sulfa',priority:'high',
-     notes:'Watch for fever spike. JP drain in place. Family at bedside.',
-     issues:[
-       {id:uid(),text:'CBC + BMP at 0600',done:false},
-       {id:uid(),text:'Advance diet to clears if afebrile',done:false},
-       {id:uid(),text:'JP drain output check q8h',done:true},
-     ]},
-    {id:uid(),name:'Kowalski, Sandra M.',mrn:'3819204',room:'5A-08',surgeon:'Dr. Patel',
-     diagnosis:'Choledocholithiasis',procedure:'ERCP + Lap cholecystectomy',
-     surgeryDate:dateOffset(-2),
-     codeStatus:'Full Code',allergies:'NKDA',priority:'medium',
-     notes:'Awaiting GI clearance. LFTs trending down. OK for discharge if afebrile.',
-     issues:[
-       {id:uid(),text:'LFT trend check at 1600',done:false},
-       {id:uid(),text:'GI attending callback',done:false},
-       {id:uid(),text:'Pain controlled — Tylenol + Toradol',done:true},
-     ]},
-    {id:uid(),name:'Huang, Robert T.',mrn:'5720183',room:'6C-04',surgeon:'Dr. Williams',
-     diagnosis:'Colorectal adenocarcinoma (T3N1)',procedure:'Anterior resection + diverting ileostomy',
-     surgeryDate:dateOffset(-5),
-     codeStatus:'DNR/DNI',allergies:'Morphine (nausea), Ciprofloxacin',priority:'medium',
-     notes:'Oncology consult pending. Family meeting tomorrow 0900 in conference room B.',
-     issues:[
-       {id:uid(),text:'Stoma output >500cc — reassess IVF',done:false},
-       {id:uid(),text:'Oncology consult callback',done:false},
-       {id:uid(),text:'Wound check completed',done:true},
-     ]},
-    {id:uid(),name:'Delgado, Maria C.',mrn:'6103847',room:'4B-19',surgeon:'Dr. Chen',
-     diagnosis:'Incarcerated ventral hernia',procedure:'Open hernia repair with mesh',
-     surgeryDate:dateOffset(-3),
-     codeStatus:'Full Code',allergies:'NKDA',priority:'stable',
-     notes:'Doing well. Discharge planning today — arrange home PT.',
-     issues:[
-       {id:uid(),text:'PT/OT eval complete',done:true},
-       {id:uid(),text:'Discharge Rx + patient instructions',done:false},
-     ]},
-  ];
-})();
-
-/* ═══════════════════════════════
-   POD HELPERS
-═══════════════════════════════ */
-function dateOffset(days){
-  const d=new Date();d.setDate(d.getDate()+days);
-  return d.toISOString().slice(0,10);
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
-function calcPOD(surgeryDate){
-  if(!surgeryDate)return null;
-  const sx=new Date(surgeryDate+'T00:00:00');
-  const today=new Date();
-  today.setHours(0,0,0,0);
-  const diff=Math.round((today-sx)/(1000*60*60*24));
+
+function $(sel) {
+  return document.querySelector(sel);
+}
+
+function $$(sel) {
+  return document.querySelectorAll(sel);
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function calcPOD(dateStr) {
+  if (!dateStr) return null;
+  const sd = new Date(dateStr);
+  if (isNaN(sd.getTime())) return null;
+  const now = new Date();
+  const diff = Math.floor((now - sd) / 86400000);
   return diff;
 }
-function podLabel(pod){
-  if(pod===null||pod===undefined)return null;
-  if(pod<0)return{text:'Pre-op '+(Math.abs(pod))+'d',cls:'pod-preop'};
-  if(pod===0)return{text:'POD 0 (Today)',cls:'pod-early'};
-  return{text:`POD ${pod}`,cls:pod<=3?'pod-early':pod<=7?'pod-mid':'pod-late'};
+
+function podInfo(pod) {
+  if (pod === null || pod === undefined) return null;
+  if (pod < 0) return { text: 'Pre-Op', cls: 'pre-op' };
+  if (pod === 0) return { text: 'POD 0', cls: 'pod-0' };
+  if (pod <= 3) return { text: 'POD ' + pod, cls: 'pod-low' };
+  if (pod <= 7) return { text: 'POD ' + pod, cls: 'pod-mid' };
+  return { text: 'POD ' + pod, cls: 'pod-high' };
 }
 
-/* ═══════════════════════════════
-   NAVIGATION
-═══════════════════════════════ */
-function nav(view,data={}){
+const STORAGE_KEY = 'surgsign_data';
+
+function save() {
+  const data = {
+    patients: S.patients,
+    shift: S.shift,
+    service: S.service,
+    disclaimerAccepted: S.disclaimerAccepted,
+    selectedId: S.selectedId,
+  };
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (data.patients) S.patients = data.patients;
+    if (data.shift) S.shift = data.shift;
+    if (data.service) S.service = data.service;
+    if (data.disclaimerAccepted) S.disclaimerAccepted = data.disclaimerAccepted;
+    if (data.selectedId) S.selectedId = data.selectedId;
+    return true;
+  } catch (e) { return false; }
+}
+
+function navigate(view, opts) {
   stopCamera();
-  Object.assign(S,data);
-  S.view=view;
+  S.view = view;
+  if (opts) Object.assign(S, opts);
+  render();
+  save();
+}
+
+function addPatient(data) {
+  const p = {
+    id: uid(),
+    name: data.name || '',
+    mrn: data.mrn || '',
+    room: data.room || '',
+    surgeon: data.surgeon || '',
+    diagnosis: data.diagnosis || '',
+    procedure: data.procedure || '',
+    surgeryDate: data.surgeryDate || '',
+    codeStatus: data.codeStatus || 'Full Code',
+    allergies: data.allergies || '',
+    priority: data.priority || 'stable',
+    notes: data.notes || '',
+    issues: data.issues || [],
+  };
+  S.patients.push(p);
+  S.selectedId = p.id;
+  save();
+  return p;
+}
+
+function updatePatient(id, data) {
+  const idx = S.patients.findIndex(p => p.id === id);
+  if (idx === -1) return;
+  Object.assign(S.patients[idx], data);
+  save();
+}
+
+function deletePatient(id) {
+  S.patients = S.patients.filter(p => p.id !== id);
+  if (S.selectedId === id) S.selectedId = S.patients.length ? S.patients[0].id : null;
+  save();
+}
+
+function getPatient(id) {
+  return S.patients.find(p => p.id === id) || null;
+}
+
+function getFilteredPatients() {
+  if (!S.search.trim()) return S.patients;
+  const q = S.search.toLowerCase().trim();
+  return S.patients.filter(p =>
+    (p.name && p.name.toLowerCase().includes(q)) ||
+    (p.mrn && p.mrn.toLowerCase().includes(q)) ||
+    (p.room && p.room.toLowerCase().includes(q)) ||
+    (p.surgeon && p.surgeon.toLowerCase().includes(q)) ||
+    (p.diagnosis && p.diagnosis.toLowerCase().includes(q))
+  );
+}
+
+function addTask(patientId, text) {
+  const p = getPatient(patientId);
+  if (!p) return;
+  if (!p.issues) p.issues = [];
+  p.issues.push({ id: uid(), text: text, done: false });
+  save();
+}
+
+function toggleTask(patientId, taskId) {
+  const p = getPatient(patientId);
+  if (!p || !p.issues) return;
+  const t = p.issues.find(i => i.id === taskId);
+  if (t) t.done = !t.done;
+  save();
+}
+
+function deleteTask(patientId, taskId) {
+  const p = getPatient(patientId);
+  if (!p || !p.issues) return;
+  p.issues = p.issues.filter(i => i.id !== taskId);
+  save();
+}
+
+function encodeQR() {
+  const payload = JSON.stringify({
+    v: 2,
+    svc: S.service,
+    from: S.shift,
+    pts: S.patients.map(p => ({
+      id: p.id, n: p.name, m: p.mrn, r: p.room, s: p.surgeon,
+      dx: p.diagnosis, px: p.procedure, sd: p.surgeryDate || '',
+      cs: p.codeStatus, al: p.allergies, pr: p.priority, nt: p.notes,
+      is: (p.issues || []).map(i => ({ id: i.id, t: i.text, d: i.done ? 1 : 0 }))
+    }))
+  });
+  return 'SS2:' + LZString.compressToEncodedURIComponent(payload);
+}
+
+function decodeQR(str) {
+  if (!str || !str.startsWith('SS2:')) return null;
+  try {
+    const json = LZString.decompressFromEncodedURIComponent(str.slice(4));
+    if (!json) return null;
+    const d = JSON.parse(json);
+    return {
+      service: d.svc || '',
+      shift: d.from || 'AM',
+      patients: (d.pts || []).map(p => ({
+        id: p.id || uid(), name: p.n || '', mrn: p.m || '', room: p.r || '',
+        surgeon: p.s || '', diagnosis: p.dx || '', procedure: p.px || '',
+        surgeryDate: p.sd || '', codeStatus: p.cs || 'Full Code',
+        allergies: p.al || '', priority: p.pr || 'stable', notes: p.nt || '',
+        issues: (p.is || []).map(i => ({ id: i.id || uid(), text: i.t || '', done: !!i.d }))
+      }))
+    };
+  } catch (e) { return null; }
+}
+
+function startCamera(videoEl, onScan) {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Camera not available on this device.');
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(stream => {
+      S.cameraStream = stream;
+      videoEl.srcObject = stream;
+      videoEl.setAttribute('playsinline', 'true');
+      videoEl.play();
+      requestAnimationFrame(function tick() {
+        if (!S.cameraStream) return;
+        if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
+          const canvas = document.createElement('canvas');
+          canvas.width = videoEl.videoWidth;
+          canvas.height = videoEl.videoHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(videoEl, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, canvas.width, canvas.height);
+          if (code && code.data) {
+            const result = decodeQR(code.data);
+            if (result) {
+              stopCamera();
+              onScan(result);
+              return;
+            }
+          }
+        }
+        requestAnimationFrame(tick);
+      });
+    })
+    .catch(err => {
+      console.error('Camera error:', err);
+      alert('Could not access camera: ' + err.message);
+    });
+}
+
+function stopCamera() {
+  if (S.cameraStream) {
+    S.cameraStream.getTracks().forEach(t => t.stop());
+    S.cameraStream = null;
+  }
+}
+
+function exportJSON() {
+  const data = {
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    service: S.service,
+    shift: S.shift,
+    patients: S.patients,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'surgsign-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.patients && Array.isArray(data.patients)) {
+        S.patients = data.patients;
+        if (data.service) S.service = data.service;
+        if (data.shift) S.shift = data.shift;
+        S.selectedId = S.patients.length ? S.patients[0].id : null;
+        save();
+        navigate('home');
+      } else {
+        alert('Invalid backup file format.');
+      }
+    } catch (err) {
+      alert('Could not parse backup file.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function wipeData() {
+  S.patients = [];
+  S.selectedId = null;
+  S.service = 'General Surgery';
+  S.shift = 'AM';
+  S.search = '';
+  save();
+  navigate('home');
+}
+
+function loadDemoData() {
+  S.patients = [
+    {
+      id: uid(), name: 'Morrison, James', mrn: '384-29-1047', room: '4-212A',
+      surgeon: 'Dr. Patel', diagnosis: 'Acute cholecystitis',
+      procedure: 'Laparoscopic cholecystectomy', surgeryDate: new Date(Date.now() - 2 * 86400000).toISOString(),
+      codeStatus: 'Full Code', allergies: 'Penicillin', priority: 'medium',
+      notes: 'Tolerating clears, ambulating. JP drain output decreasing.',
+      issues: [
+        { id: uid(), text: 'Follow-up LFTs in AM', done: false },
+        { id: uid(), text: 'Advance diet to regular', done: true },
+        { id: uid(), text: 'Remove JP if output < 30cc', done: false },
+      ]
+    },
+    {
+      id: uid(), name: 'Kowalski, Anna', mrn: '521-87-3364', room: '5-118B',
+      surgeon: 'Dr. Chen', diagnosis: 'Perforated appendicitis',
+      procedure: 'Open appendectomy with drain placement', surgeryDate: new Date(Date.now() - 5 * 86400000).toISOString(),
+      codeStatus: 'Full Code', allergies: 'NKDA', priority: 'high',
+      notes: 'WBC trending down 14.2 → 11.8. Wound VAC in place.',
+      issues: [
+        { id: uid(), text: 'Continue IV Zosyn day 5/7', done: false },
+        { id: uid(), text: 'Wound VAC change tomorrow', done: false },
+        { id: uid(), text: 'Repeat CBC in AM', done: false },
+        { id: uid(), text: 'PT/OT evaluation', done: true },
+      ]
+    },
+    {
+      id: uid(), name: 'Huang, David', mrn: '673-45-9921', room: '4-305',
+      surgeon: 'Dr. Patel', diagnosis: 'Small bowel obstruction',
+      procedure: 'Exploratory laparotomy with lysis of adhesions', surgeryDate: new Date(Date.now() - 1 * 86400000).toISOString(),
+      codeStatus: 'Full Code', allergies: 'Sulfa drugs, Latex', priority: 'high',
+      notes: 'NGT to low intermittent suction. UOP adequate. Pain controlled with PCA.',
+      issues: [
+        { id: uid(), text: 'Monitor NGT output', done: false },
+        { id: uid(), text: 'Strict I&O recording', done: false },
+        { id: uid(), text: 'BMP in AM for electrolytes', done: false },
+        { id: uid(), text: 'Incentive spirometry q1h while awake', done: false },
+      ]
+    },
+    {
+      id: uid(), name: 'Delgado, Maria', mrn: '198-63-7742', room: '5-220',
+      surgeon: 'Dr. Chen', diagnosis: 'Right inguinal hernia',
+      procedure: 'Laparoscopic inguinal hernia repair (TAPP)', surgeryDate: new Date(Date.now() + 1 * 86400000).toISOString(),
+      codeStatus: 'DNR', allergies: 'Codeine', priority: 'low',
+      notes: 'Pre-op clearance obtained. NPO after midnight.',
+      issues: [
+        { id: uid(), text: 'Confirm OR time with scheduling', done: true },
+        { id: uid(), text: 'Pre-op labs (CBC, BMP, PT/INR)', done: true },
+        { id: uid(), text: 'Type and screen', done: false },
+        { id: uid(), text: 'Consent form signed', done: false },
+      ]
+    }
+  ];
+  S.selectedId = S.patients[0].id;
+  save();
+  navigate('home');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+  if (e.key === 'n' && !e.ctrlKey && !e.metaKey && S.view === 'home') {
+    e.preventDefault();
+    navigate('patient-form', { editingPatient: null });
+  }
+  if (e.key === '/' && S.view === 'home') {
+    e.preventDefault();
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) searchInput.focus();
+  }
+  if (e.key === 'Escape') {
+    if (S.view === 'patient-form' || S.view === 'qr-show' || S.view === 'qr-scan' || S.view === 'settings') {
+      navigate('home');
+    }
+  }
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').catch(function(err) {
+      console.log('SW registration failed:', err);
+    });
+  });
+}
+
+function init() {
+  const loaded = load();
+  if (S.disclaimerAccepted) {
+    S.view = 'home';
+  } else {
+    S.view = 'disclaimer';
+  }
   render();
 }
 
-function stopCamera(){
-  if(S.cameraStream){
-    S.cameraStream.getTracks().forEach(t=>t.stop());
-    S.cameraStream=null;
+document.addEventListener('DOMContentLoaded', init);
+
+/* ui.js — Rendering layer for SurgSign PWA (concatenated after core.js) */
+
+function render() {
+  var app = document.getElementById('app');
+  if (!app) return;
+
+  switch (S.view) {
+    case 'disclaimer':    renderDisclaimer(app); break;
+    case 'home':          renderHome(app); break;
+    case 'patient-form':  renderPatientForm(app); break;
+    case 'qr-show':       renderQRShow(app); break;
+    case 'qr-scan':       renderQRScan(app); break;
+    case 'settings':      renderSettings(app); break;
+    default:              renderHome(app); break;
   }
 }
 
-/* ═══════════════════════════════
-   PATIENT CRUD
-═══════════════════════════════ */
-function openPatient(id){
-  const p=S.patients.find(p=>p.id===id);
-  formTasks=p?p.issues.map(t=>({...t})):[];
-  nav('patient-form',{editingPatient:p?{...p,issues:[...p.issues]}:null});
-}
-function newPatient(){formTasks=[];nav('patient-form',{editingPatient:null});}
+/* ── Disclaimer ──────────────────────────────────────────────────────── */
 
-function savePatientForm(){
-  const name=document.getElementById('f-name').value.trim();
-  if(!name){toast('Patient name is required');return;}
-  const pt={
-    id:S.editingPatient?.id||uid(),
-    name,
-    mrn:document.getElementById('f-mrn').value.trim(),
-    room:document.getElementById('f-room').value.trim(),
-    surgeon:document.getElementById('f-surgeon').value.trim(),
-    diagnosis:document.getElementById('f-dx').value.trim(),
-    procedure:document.getElementById('f-px').value.trim(),
-    surgeryDate:document.getElementById('f-surgdate').value||'',
-    codeStatus:document.getElementById('f-code').value,
-    allergies:document.getElementById('f-allergies').value.trim(),
-    priority:document.getElementById('f-priority').value,
-    notes:document.getElementById('f-notes').value.trim(),
-    issues:[...formTasks],
-  };
-  const idx=S.patients.findIndex(p=>p.id===pt.id);
-  if(idx>=0)S.patients[idx]=pt; else S.patients.push(pt);
-  nav('home');
-  toast(S.editingPatient?'Patient updated':'Patient added');
-}
+function renderDisclaimer(app) {
+  app.innerHTML =
+    '<div class="fullscreen-view" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">' +
+      '<div style="max-width:480px;text-align:center;padding:2rem;">' +
+        '<h1 style="font-size:2.4rem;font-weight:800;margin-bottom:.25rem;">SurgSign</h1>' +
+        '<p style="margin-bottom:1.5rem;opacity:.7;">Surgical Rounding &amp; Handoff Tool</p>' +
+        '<p style="text-align:left;line-height:1.6;margin-bottom:2rem;">' +
+          'This application is designed as a supplementary tool for surgical team handoffs. ' +
+          'It is <strong>NOT</strong> a medical record and should not replace institutional handoff protocols. ' +
+          'All patient data is stored locally on this device and transferred via QR code. ' +
+          'No data is transmitted to any server. By continuing, you acknowledge this tool is for reference purposes only.' +
+        '</p>' +
+        '<button class="btn btn-primary" id="disclaimer-accept">I Understand — Continue</button>' +
+      '</div>' +
+    '</div>';
 
-function deletePatientForm(){
-  if(!S.editingPatient)return;
-  if(!confirm(`Remove ${S.editingPatient.name} from the list?\n\nThis cannot be undone.`))return;
-  S.patients=S.patients.filter(p=>p.id!==S.editingPatient.id);
-  nav('home');toast('Patient removed');
-}
-
-function toggleShift(s){S.shift=s;renderHome();}
-
-function updateService(){
-  const v=document.getElementById('service-input')?.value.trim();
-  if(v)S.service=v;
-}
-
-/* ═══════════════════════════════
-   FORM TASKS
-═══════════════════════════════ */
-function addFormTask(){
-  const inp=document.getElementById('new-task-input');
-  const text=inp.value.trim();if(!text)return;
-  formTasks.push({id:uid(),text,done:false});
-  inp.value='';refreshTaskList();
-}
-function removeFormTask(id){formTasks=formTasks.filter(t=>t.id!==id);refreshTaskList();}
-function toggleFormTask(id){const t=formTasks.find(t=>t.id===id);if(t)t.done=!t.done;refreshTaskList();}
-function taskKey(e){if(e.key==='Enter'){e.preventDefault();addFormTask();}}
-function updatePODPreview(){
-  const val=document.getElementById('f-surgdate')?.value;
-  const wrap=document.getElementById('pod-preview-wrap');
-  if(!wrap)return;
-  const pl=podLabel(calcPOD(val));
-  wrap.innerHTML=pl?`<span class="pod-preview">${pl.text}</span>`:'';
-}
-function refreshTaskList(){const el=document.getElementById('task-list');if(el)el.innerHTML=taskListHTML();}
-function taskListHTML(){
-  if(!formTasks.length)return'<div class="no-tasks">No tasks added yet</div>';
-  return formTasks.map(t=>`
-    <div class="task-item${t.done?' done':''}">
-      <button class="task-check" onclick="toggleFormTask('${t.id}')">${t.done?'✓':''}</button>
-      <span class="task-text">${esc(t.text)}</span>
-      <button class="task-remove" onclick="removeFormTask('${t.id}')">×</button>
-    </div>`).join('');
-}
-
-/* ═══════════════════════════════
-   QR ENCODE / DECODE
-═══════════════════════════════ */
-function encodeQR(){
-  const data=JSON.stringify({
-    v:2,svc:S.service,from:S.shift,
-    pts:S.patients.map(p=>({
-      id:p.id,n:p.name,m:p.mrn,r:p.room,s:p.surgeon,
-      dx:p.diagnosis,px:p.procedure,sd:p.surgeryDate||'',cs:p.codeStatus,
-      al:p.allergies,pr:p.priority,nt:p.notes,
-      is:(p.issues||[]).map(i=>({id:i.id,t:i.text,d:i.done?1:0}))
-    }))
+  app.querySelector('#disclaimer-accept').addEventListener('click', function () {
+    S.disclaimerAccepted = true;
+    navigate('home');
   });
-  return 'SS2:'+LZString.compressToEncodedURIComponent(data);
 }
 
-function decodeQR(str){
-  if(!str||!str.startsWith('SS2:'))return null;
-  try{
-    const json=LZString.decompressFromEncodedURIComponent(str.slice(4));
-    const d=JSON.parse(json);
-    return{
-      ...d,
-      patients:d.pts.map(p=>({
-        id:p.id,name:p.n,mrn:p.m,room:p.r,surgeon:p.s,
-        diagnosis:p.dx,procedure:p.px,surgeryDate:p.sd||'',codeStatus:p.cs,
-        allergies:p.al,priority:p.pr,notes:p.nt,
-        issues:(p.is||[]).map(i=>({id:i.id,text:i.t,done:!!i.d}))
-      }))
-    };
-  }catch(e){return null;}
-}
+/* ── Home (two-pane) ─────────────────────────────────────────────────── */
 
-function generateQR(){
-  const el=document.getElementById('qr-canvas');if(!el)return;
-  el.innerHTML='';
-  try{
-    new QRCode(el,{
-      text:encodeQR(),width:240,height:240,
-      colorDark:'#000000',colorLight:'#ffffff',
-      correctLevel:QRCode.CorrectLevel.M
+function renderHome(app) {
+  var patients = getFilteredPatients();
+  var sel = S.selectedId ? getPatient(S.selectedId) : null;
+
+  var html = '<div class="app-shell">';
+
+  /* — sidebar — */
+  html += '<div class="sidebar">';
+  html += renderSidebarHeader();
+  html += '<div class="search-box">' +
+    '<input class="search-input" id="search-input" type="text" placeholder="Search patients… ( / )" value="' + escHtml(S.search || '') + '">' +
+    '</div>';
+
+  html += '<div class="sidebar-list">';
+  if (patients.length === 0 && S.patients.length === 0) {
+    html += '<div class="empty-state" style="padding:2rem;text-align:center;">' +
+      '<p>No patients yet</p>' +
+      '<button class="btn btn-primary btn-sm" id="empty-add" style="margin:.5rem .25rem;">+ Add Patient</button>' +
+      '<button class="btn btn-ghost btn-sm" id="empty-demo" style="margin:.5rem .25rem;">Load Demo Data</button>' +
+      '</div>';
+  } else if (patients.length === 0) {
+    html += '<div class="empty-state" style="padding:2rem;text-align:center;">No matching patients</div>';
+  } else {
+    patients.forEach(function (p) {
+      var isActive = p.id === S.selectedId;
+      var pod = calcPOD(p.surgeryDate);
+      var pi = podInfo(pod);
+      var totalTasks = (p.issues || []).length;
+      var doneTasks = (p.issues || []).filter(function (t) { return t.done; }).length;
+      var prClass = (p.priority || 'stable').toLowerCase();
+
+      html += '<div class="patient-card' + (isActive ? ' active' : '') + '" data-id="' + escHtml(p.id) + '" style="border-left:4px solid var(--priority-' + prClass + ', #888);">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+      html += '<strong>' + escHtml(p.name || 'Unnamed') + '</strong>';
+      html += '<span>';
+      if (p.room) html += '<span class="badge">' + escHtml(p.room) + '</span> ';
+      if (pi) html += '<span class="badge badge-pod ' + pi.cls + '">' + escHtml(pi.text) + '</span>';
+      html += '</span>';
+      html += '</div>';
+      html += '<div style="font-size:.85em;opacity:.7;margin-top:.2rem;">';
+      if (p.surgeon) html += escHtml(p.surgeon);
+      if (p.surgeon && p.mrn) html += ' &middot; ';
+      if (p.mrn) html += 'MRN ' + escHtml(p.mrn);
+      html += '</div>';
+      if (totalTasks > 0) {
+        html += '<div style="font-size:.8em;opacity:.6;margin-top:.2rem;">' + doneTasks + '/' + totalTasks + ' tasks</div>';
+      }
+      html += '</div>';
     });
-  }catch(e){
-    el.innerHTML='<p style="color:#FF4538;padding:10px;font-size:13px">QR generation failed — patient list may be too large. Try reducing notes length.</p>';
   }
+  html += '</div>'; // sidebar-list
+  html += '</div>'; // sidebar
+
+  /* — detail pane — */
+  html += '<div class="detail-pane">';
+  if (sel) {
+    html += renderPatientDetail(sel);
+  } else {
+    html += '<div class="empty-state" style="display:flex;align-items:center;justify-content:center;height:100%;">' +
+      '<p>Select a patient from the sidebar or add a new one.</p></div>';
+  }
+  html += '</div>'; // detail-pane
+  html += '</div>'; // app-shell
+
+  app.innerHTML = html;
+
+  /* — event binding — */
+  var searchInput = app.querySelector('#search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      S.search = this.value;
+      render();
+    });
+    if (S.search) searchInput.focus();
+  }
+
+  app.querySelectorAll('.patient-card').forEach(function (el) {
+    el.addEventListener('click', function () {
+      S.selectedId = this.dataset.id;
+      render();
+    });
+  });
+
+  var emptyAdd = app.querySelector('#empty-add');
+  if (emptyAdd) emptyAdd.addEventListener('click', function () {
+    S.editingPatient = null;
+    navigate('patient-form');
+  });
+  var emptyDemo = app.querySelector('#empty-demo');
+  if (emptyDemo) emptyDemo.addEventListener('click', function () {
+    loadDemoData();
+    render();
+  });
+
+  bindSidebarHeaderEvents(app);
+  if (sel) bindPatientDetailEvents(app, sel);
 }
 
-/* ═══════════════════════════════
-   CAMERA / SCAN
-═══════════════════════════════ */
-async function startCamera(){
-  const video=document.getElementById('scan-video');
-  const canvas=document.getElementById('scan-canvas');
-  if(!video||!canvas)return;
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:'environment',width:{ideal:1280}}
+function renderSidebarHeader() {
+  var shiftCls = (S.shift || 'am').toLowerCase();
+  var html = '<div class="sidebar-header">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">';
+  html += '<div>';
+  html += '<span style="font-weight:800;font-size:1.2rem;">SurgSign</span> ';
+  html += '<span class="badge badge-shift ' + shiftCls + '">' + escHtml((S.shift || 'AM').toUpperCase()) + '</span>';
+  html += '</div>';
+  html += '</div>';
+  if (S.service) {
+    html += '<div style="font-size:.85em;opacity:.7;margin-bottom:.5rem;">' + escHtml(S.service) + '</div>';
+  }
+  html += '<div style="display:flex;gap:.4rem;">';
+  html += '<button class="btn btn-icon btn-sm" id="btn-add-patient" title="Add Patient">+</button>';
+  html += '<button class="btn btn-icon btn-sm" id="btn-qr-show" title="QR Handoff">QR</button>';
+  html += '<button class="btn btn-icon btn-sm" id="btn-qr-scan" title="Scan QR">Scan</button>';
+  html += '<button class="btn btn-icon btn-sm" id="btn-settings" title="Settings">⚙</button>';
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+function bindSidebarHeaderEvents(app) {
+  var btnAdd = app.querySelector('#btn-add-patient');
+  if (btnAdd) btnAdd.addEventListener('click', function () {
+    S.editingPatient = null;
+    navigate('patient-form');
+  });
+  var btnQR = app.querySelector('#btn-qr-show');
+  if (btnQR) btnQR.addEventListener('click', function () { navigate('qr-show'); });
+  var btnScan = app.querySelector('#btn-qr-scan');
+  if (btnScan) btnScan.addEventListener('click', function () { navigate('qr-scan'); });
+  var btnSettings = app.querySelector('#btn-settings');
+  if (btnSettings) btnSettings.addEventListener('click', function () { navigate('settings'); });
+}
+
+/* ── Patient Detail ──────────────────────────────────────────────────── */
+
+function renderPatientDetail(p) {
+  var pod = calcPOD(p.surgeryDate);
+  var pi = podInfo(pod);
+  var prClass = (p.priority || 'stable').toLowerCase();
+  var csRaw = (p.codeStatus || 'Full Code').toLowerCase().replace(/[^a-z]/g, '');
+  var csClass = '';
+  if (csRaw === 'fullcode' || csRaw === 'full') csClass = 'full';
+  else if (csRaw === 'dnr') csClass = 'dnr';
+  else if (csRaw === 'dni') csClass = 'dnr';
+  else if (csRaw === 'dnrdni') csClass = 'dnr';
+  else if (csRaw === 'comfortmeasures') csClass = 'dnr';
+  else csClass = 'full';
+
+  var html = '';
+  html += '<div class="detail-header" style="display:flex;justify-content:space-between;align-items:center;">';
+  html += '<h2 style="margin:0;">' + escHtml(p.name || 'Unnamed') + '</h2>';
+  html += '<div>';
+  html += '<button class="btn btn-ghost btn-sm" id="btn-edit-patient" title="Edit">✎ Edit</button> ';
+  html += '<button class="btn btn-danger btn-sm" id="btn-delete-patient" title="Delete">✕ Delete</button>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '<div class="detail-body">';
+
+  /* info grid */
+  html += '<div class="detail-section">';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">';
+  html += infoCell('Room', p.room);
+  html += infoCell('MRN', p.mrn);
+  html += infoCell('Surgeon', p.surgeon);
+  html += '<div><span style="font-size:.8em;opacity:.6;">Code Status</span><br>' +
+    '<span class="badge badge-code-status ' + csClass + '">' + escHtml(p.codeStatus || 'Full Code') + '</span></div>';
+  html += '<div><span style="font-size:.8em;opacity:.6;">Priority</span><br>' +
+    '<span class="badge badge-priority ' + prClass + '">' + escHtml(p.priority || 'stable') + '</span></div>';
+  html += infoCell('Allergies', p.allergies || 'NKDA');
+  html += '<div style="grid-column:span 2;"><span style="font-size:.8em;opacity:.6;">Surgery Date</span><br>' +
+    escHtml(p.surgeryDate || 'N/A') +
+    (pi ? ' <span class="badge badge-pod ' + pi.cls + '">' + escHtml(pi.text) + '</span>' : '') +
+    '</div>';
+  html += '</div>';
+  html += '</div>';
+
+  /* diagnosis */
+  html += '<div class="detail-section">';
+  html += '<h3>Diagnosis</h3>';
+  html += '<p>' + escHtml(p.diagnosis || 'N/A') + '</p>';
+  html += '</div>';
+
+  /* procedure */
+  html += '<div class="detail-section">';
+  html += '<h3>Procedure</h3>';
+  html += '<p>' + escHtml(p.procedure || 'N/A') + '</p>';
+  html += '</div>';
+
+  /* tasks */
+  var tasks = p.issues || [];
+  html += '<div class="detail-section">';
+  html += '<h3>Tasks <span style="opacity:.5;font-weight:normal;">(' + tasks.length + ')</span></h3>';
+  tasks.forEach(function (t) {
+    var doneClass = t.done ? ' task-done' : '';
+    html += '<div class="task-item' + doneClass + '" data-task-id="' + escHtml(t.id) + '">';
+    html += '<input type="checkbox" class="task-checkbox" data-task-id="' + escHtml(t.id) + '"' + (t.done ? ' checked' : '') + '>';
+    html += '<span class="task-text">' + escHtml(t.text) + '</span>';
+    html += '<button class="btn btn-ghost btn-sm task-delete-btn" data-task-id="' + escHtml(t.id) + '">✕</button>';
+    html += '</div>';
+  });
+  html += '<div style="display:flex;gap:.5rem;margin-top:.5rem;">';
+  html += '<input class="input-field" id="new-task-input" type="text" placeholder="Add a task…" style="flex:1;">';
+  html += '<button class="btn btn-primary btn-sm" id="btn-add-task">Add</button>';
+  html += '</div>';
+  html += '</div>';
+
+  /* notes */
+  html += '<div class="detail-section">';
+  html += '<h3>Notes</h3>';
+  html += '<div style="white-space:pre-wrap;font-size:.9em;">' + escHtml(p.notes || 'No notes.') + '</div>';
+  html += '</div>';
+
+  html += '</div>'; // detail-body
+  return html;
+}
+
+function infoCell(label, value) {
+  return '<div><span style="font-size:.8em;opacity:.6;">' + escHtml(label) + '</span><br>' + escHtml(value || 'N/A') + '</div>';
+}
+
+function bindPatientDetailEvents(app, p) {
+  var btnEdit = app.querySelector('#btn-edit-patient');
+  if (btnEdit) btnEdit.addEventListener('click', function () {
+    S.editingPatient = JSON.parse(JSON.stringify(p));
+    navigate('patient-form');
+  });
+
+  var btnDel = app.querySelector('#btn-delete-patient');
+  if (btnDel) btnDel.addEventListener('click', function () {
+    if (confirm('Delete patient "' + p.name + '"? This cannot be undone.')) {
+      deletePatient(p.id);
+      S.selectedId = S.patients.length ? S.patients[0].id : null;
+      render();
+    }
+  });
+
+  app.querySelectorAll('.task-checkbox').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      toggleTask(p.id, this.dataset.taskId);
+      render();
     });
-    video.srcObject=stream;S.cameraStream=stream;
-    await video.play();
-    const ctx=canvas.getContext('2d');
-    function tick(){
-      if(S.view!=='qr-scan'||!S.cameraStream)return;
-      if(video.readyState===video.HAVE_ENOUGH_DATA){
-        canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-        ctx.drawImage(video,0,0,canvas.width,canvas.height);
-        const img=ctx.getImageData(0,0,canvas.width,canvas.height);
-        const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
-        if(code?.data){
-          const decoded=decodeQR(code.data);
-          if(decoded){stopCamera();S.scanPreview=decoded;render();return;}
+  });
+
+  app.querySelectorAll('.task-delete-btn').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      deleteTask(p.id, this.dataset.taskId);
+      render();
+    });
+  });
+
+  var btnAddTask = app.querySelector('#btn-add-task');
+  var taskInput = app.querySelector('#new-task-input');
+  if (btnAddTask && taskInput) {
+    btnAddTask.addEventListener('click', function () {
+      var text = taskInput.value.trim();
+      if (text) {
+        addTask(p.id, text);
+        render();
+      }
+    });
+    taskInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        var text = this.value.trim();
+        if (text) {
+          addTask(p.id, text);
+          render();
         }
       }
-      requestAnimationFrame(tick);
+    });
+  }
+}
+
+/* ── Patient Form ────────────────────────────────────────────────────── */
+
+function renderPatientForm(app) {
+  var ep = S.editingPatient;
+  var isEdit = !!ep;
+  var title = isEdit ? 'Edit Patient' : 'New Patient';
+
+  var v = {
+    name: (ep && ep.name) || '',
+    mrn: (ep && ep.mrn) || '',
+    room: (ep && ep.room) || '',
+    surgeon: (ep && ep.surgeon) || '',
+    surgeryDate: (ep && ep.surgeryDate) || '',
+    priority: (ep && ep.priority) || 'stable',
+    codeStatus: (ep && ep.codeStatus) || 'Full Code',
+    diagnosis: (ep && ep.diagnosis) || '',
+    procedure: (ep && ep.procedure) || '',
+    allergies: (ep && ep.allergies) || '',
+    notes: (ep && ep.notes) || ''
+  };
+
+  var priorityOpts = ['stable', 'low', 'medium', 'high'];
+  var codeOpts = ['Full Code', 'DNR', 'DNI', 'DNR/DNI', 'Comfort Measures'];
+
+  var html = '<div class="fullscreen-view">';
+  html += '<div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;padding:1rem;">';
+  html += '<button class="btn btn-ghost" id="form-cancel">← Cancel</button>';
+  html += '<strong>' + escHtml(title) + '</strong>';
+  html += '<button class="btn btn-primary" id="form-save">Save</button>';
+  html += '</div>';
+
+  html += '<div style="max-width:640px;margin:0 auto;padding:1rem;">';
+
+  html += formGroup('Name', '<input class="input-field" id="f-name" type="text" value="' + escHtml(v.name) + '" required>');
+  html += formGroup('MRN', '<input class="input-field" id="f-mrn" type="text" value="' + escHtml(v.mrn) + '">');
+  html += formGroup('Room', '<input class="input-field" id="f-room" type="text" value="' + escHtml(v.room) + '">');
+  html += formGroup('Surgeon', '<input class="input-field" id="f-surgeon" type="text" value="' + escHtml(v.surgeon) + '">');
+
+  html += '<div class="form-row" style="display:flex;gap:1rem;">';
+  html += '<div class="form-group" style="flex:1;"><label>Surgery Date</label>' +
+    '<input class="input-field" id="f-date" type="date" value="' + escHtml(v.surgeryDate) + '"></div>';
+  html += '<div class="form-group" style="flex:1;"><label>Priority</label>' +
+    '<select class="select-field" id="f-priority">' +
+    priorityOpts.map(function (o) {
+      return '<option value="' + o + '"' + (v.priority === o ? ' selected' : '') + '>' + o + '</option>';
+    }).join('') +
+    '</select></div>';
+  html += '</div>';
+
+  html += formGroup('Code Status',
+    '<select class="select-field" id="f-code">' +
+    codeOpts.map(function (o) {
+      return '<option value="' + escHtml(o) + '"' + (v.codeStatus === o ? ' selected' : '') + '>' + escHtml(o) + '</option>';
+    }).join('') +
+    '</select>');
+
+  html += formGroup('Diagnosis', '<textarea class="textarea-field" id="f-diagnosis" rows="3">' + escHtml(v.diagnosis) + '</textarea>');
+  html += formGroup('Procedure', '<textarea class="textarea-field" id="f-procedure" rows="3">' + escHtml(v.procedure) + '</textarea>');
+  html += formGroup('Allergies', '<input class="input-field" id="f-allergies" type="text" value="' + escHtml(v.allergies) + '">');
+  html += formGroup('Notes', '<textarea class="textarea-field" id="f-notes" rows="4">' + escHtml(v.notes) + '</textarea>');
+
+  html += '</div>';
+  html += '</div>';
+
+  app.innerHTML = html;
+
+  app.querySelector('#form-cancel').addEventListener('click', function () {
+    navigate('home');
+  });
+
+  app.querySelector('#form-save').addEventListener('click', function () {
+    var data = {
+      name: app.querySelector('#f-name').value.trim(),
+      mrn: app.querySelector('#f-mrn').value.trim(),
+      room: app.querySelector('#f-room').value.trim(),
+      surgeon: app.querySelector('#f-surgeon').value.trim(),
+      surgeryDate: app.querySelector('#f-date').value,
+      priority: app.querySelector('#f-priority').value,
+      codeStatus: app.querySelector('#f-code').value,
+      diagnosis: app.querySelector('#f-diagnosis').value.trim(),
+      procedure: app.querySelector('#f-procedure').value.trim(),
+      allergies: app.querySelector('#f-allergies').value.trim(),
+      notes: app.querySelector('#f-notes').value.trim()
+    };
+    if (!data.name) {
+      alert('Patient name is required.');
+      return;
     }
-    requestAnimationFrame(tick);
-  }catch(err){
-    const e=document.getElementById('scan-error');
-    if(e)e.innerHTML='Camera access denied.<br>Please allow camera permissions in your browser settings, then try again.';
-  }
-}
-
-function loadScanned(){
-  const d=S.scanPreview;if(!d)return;
-  S.patients=d.patients;
-  S.service=d.svc||d.service||S.service;
-  S.shift=d.from==='AM'?'PM':'AM';
-  S.scanPreview=null;
-  nav('home');
-  toast(`Loaded ${d.patients.length} patients from ${d.from} shift handoff`);
-}
-
-/* ═══════════════════════════════
-   RENDER: HOME
-═══════════════════════════════ */
-function renderHome(){
-  const isAM=S.shift==='AM';
-  const sc=isAM?'var(--am)':'var(--pm)';
-  const sorted=[...S.patients].sort((a,b)=>{
-    const o={high:0,medium:1,low:2,stable:3};
-    return(o[a.priority]??3)-(o[b.priority]??3);
-  });
-  document.getElementById('app').innerHTML=`
-  <div class="screen">
-    <header class="app-header" style="border-bottom-color:${sc}">
-      <div class="header-top">
-        <div>
-          <div class="app-title">SurgSign</div>
-          <div class="service-row">
-            <input id="service-input" class="service-edit-input"
-              value="${esc(S.service)}" onchange="updateService()"
-              onblur="updateService()" placeholder="Service name">
-          </div>
-        </div>
-        <div class="shift-toggle">
-          <button class="shift-btn${isAM?' am-on':''}" onclick="toggleShift('AM')">AM</button>
-          <button class="shift-btn${!isAM?' pm-on':''}" onclick="toggleShift('PM')">PM</button>
-        </div>
-      </div>
-      <div class="header-meta" style="margin-top:6px">
-        <span class="header-date">${fmtDate()}</span>
-        <span class="patient-count">${S.patients.length}&nbsp;patient${S.patients.length!==1?'s':''}</span>
-      </div>
-    </header>
-
-    <div class="patient-list">
-      ${sorted.length===0?`
-        <div class="empty-state">
-          <div class="empty-icon">🏥</div>
-          <p>No patients on the list</p>
-          <button class="btn-secondary" onclick="newPatient()">Add First Patient</button>
-        </div>`
-      :sorted.map(renderCard).join('')}
-    </div>
-
-    <div class="bottom-nav">
-      <button class="nav-btn" onclick="nav('qr-scan')">
-        <span class="nav-icon">📷</span><span>Scan QR</span>
-      </button>
-      <button class="nav-btn primary" onclick="newPatient()">
-        <span class="nav-icon" style="font-size:26px;font-weight:300;line-height:.9">+</span>
-        <span>Add Patient</span>
-      </button>
-      <button class="nav-btn" onclick="nav('qr-show')" ${S.patients.length===0?'disabled':''}>
-        <span class="nav-icon">📤</span><span>Handoff</span>
-      </button>
-    </div>
-  </div>`;
-}
-
-function renderCard(p){
-  const bars={high:'bar-high',medium:'bar-medium',low:'bar-low',stable:'bar-stable'};
-  const bc=bars[p.priority]||'bar-stable';
-  const cc=p.codeStatus==='Full Code'?'code-full':p.codeStatus?.startsWith('DNR')||p.codeStatus?.startsWith('DNI')?'code-dnr':'code-other';
-  const pending=(p.issues||[]).filter(i=>!i.done);
-  const dx=[p.diagnosis,p.procedure].filter(Boolean).join(' → ');
-  const pod=calcPOD(p.surgeryDate);
-  const pl=podLabel(pod);
-  return`<div class="patient-card" onclick="openPatient('${p.id}')">
-    <div class="card-bar ${bc}"></div>
-    <div class="card-body">
-      <div class="card-row1">
-        <div class="pt-name">${esc(p.name)}</div>
-        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px;">
-          ${pl?`<span class="pod-badge ${pl.cls}">${pl.text}</span>`:''}
-          <div class="room-badge">${p.room?esc(p.room):'—'}</div>
-        </div>
-      </div>
-      <div class="mrn-line">MRN&nbsp;${p.mrn?esc(p.mrn):'—'}</div>
-      ${dx?`<div class="dx-line">${esc(dx)}</div>`:''}
-      <div class="card-footer">
-        <span class="code-badge ${cc}">${esc(p.codeStatus)||'—'}</span>
-        ${pending.length>0
-          ?`<span class="tasks-badge">⚡ ${pending.length} task${pending.length!==1?'s':''} pending</span>`
-          :`<span class="all-done">✓ All tasks complete</span>`}
-      </div>
-    </div>
-  </div>`;
-}
-
-/* ═══════════════════════════════
-   RENDER: PATIENT FORM
-═══════════════════════════════ */
-function renderForm(){
-  const p=S.editingPatient;const isEdit=!!p;
-  document.getElementById('app').innerHTML=`
-  <div class="modal-screen">
-    <div class="modal-header">
-      <button class="modal-back" onclick="nav('home')">←</button>
-      <span class="modal-title">${isEdit?esc(p.name):'New Patient'}</span>
-      ${isEdit?`<button class="btn-danger" onclick="deletePatientForm()">Remove</button>`:''}
-    </div>
-
-    <div class="modal-body">
-      <div class="form-section">
-        <div class="form-label-group">Patient Identity</div>
-        <div class="form-row">
-          <label class="form-label">Full Name <span style="color:var(--red)">*</span></label>
-          <input id="f-name" class="form-input" placeholder="Last, First MI" value="${esc(p?.name||'')}">
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label class="form-label">MRN</label>
-            <input id="f-mrn" class="form-input mono" placeholder="0000000" value="${esc(p?.mrn||'')}">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Room / Bed</label>
-            <input id="f-room" class="form-input mono" placeholder="4B-12" value="${esc(p?.room||'')}">
-          </div>
-        </div>
-        <div class="form-row">
-          <label class="form-label">Attending Surgeon</label>
-          <input id="f-surgeon" class="form-input" placeholder="Dr. " value="${esc(p?.surgeon||'')}">
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-label-group">Clinical Information</div>
-        <div class="form-row">
-          <label class="form-label">Diagnosis</label>
-          <input id="f-dx" class="form-input" placeholder="Primary diagnosis" value="${esc(p?.diagnosis||'')}">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Procedure</label>
-          <input id="f-px" class="form-input" placeholder="Procedure performed" value="${esc(p?.procedure||'')}">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Date of Surgery</label>
-          <input id="f-surgdate" class="form-input mono" type="date" value="${esc(p?.surgeryDate||'')}"
-            oninput="updatePODPreview()" style="color-scheme:dark;">
-          <div id="pod-preview-wrap" style="margin-top:6px;">
-            ${(()=>{const pl=podLabel(calcPOD(p?.surgeryDate));return pl?`<span class="pod-preview">${pl.text}</span>`:''})()}
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label class="form-label">Code Status</label>
-            <select id="f-code" class="form-select">
-              ${['Full Code','DNR','DNI','DNR/DNI','Comfort Measures'].map(c=>`<option value="${c}"${p?.codeStatus===c?' selected':''}>${c}</option>`).join('')}
-            </select>
-          </div>
-          <div class="form-row">
-            <label class="form-label">Priority</label>
-            <select id="f-priority" class="form-select">
-              ${[['high','High'],['medium','Medium'],['low','Low'],['stable','Stable']].map(([v,l])=>`<option value="${v}"${p?.priority===v?' selected':''}>${l}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <label class="form-label">Allergies</label>
-          <input id="f-allergies" class="form-input" placeholder="NKDA or list allergies/reactions" value="${esc(p?.allergies||'')}">
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-label-group">Active Issues / Tasks</div>
-        <div id="task-list">${taskListHTML()}</div>
-        <div class="task-add-row">
-          <input id="new-task-input" class="form-input" placeholder="Add task or issue…" onkeydown="taskKey(event)">
-          <button class="task-add-btn" onclick="addFormTask()">+</button>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-label-group">Notes &amp; Contingency Plan</div>
-        <div class="form-row">
-          <textarea id="f-notes" class="form-textarea" placeholder="If X happens, do Y… overnight anticipations, family concerns, etc.">${esc(p?.notes||'')}</textarea>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-actions">
-      <button class="btn-secondary" onclick="nav('home')">Cancel</button>
-      <button class="btn-primary" onclick="savePatientForm()">Save Patient</button>
-    </div>
-  </div>`;
-}
-
-/* ═══════════════════════════════
-   RENDER: QR SHOW
-═══════════════════════════════ */
-function renderQRShow(){
-  document.getElementById('app').innerHTML=`
-  <div class="modal-screen">
-    <div class="modal-header">
-      <button class="modal-back" onclick="nav('home')">←</button>
-      <span class="modal-title">${esc(S.shift)} → ${S.shift==='AM'?'PM':'AM'} Handoff</span>
-    </div>
-    <div class="modal-body">
-      <div class="qr-container">
-        <p class="qr-info">Show this QR to the incoming resident to transfer the full patient list to their device.</p>
-        <div class="qr-box" id="qr-canvas"></div>
-        <p class="qr-meta">${esc(S.service)} &nbsp;·&nbsp; ${S.shift} shift &nbsp;·&nbsp; ${S.patients.length} patient${S.patients.length!==1?'s':''}</p>
-        <div class="qr-warning">
-          ⚠️ This QR contains protected health information.<br>
-          Only display to the receiving resident in person.
-          Data is not transmitted over the internet.
-        </div>
-      </div>
-    </div>
-  </div>`;
-  setTimeout(generateQR,60);
-}
-
-/* ═══════════════════════════════
-   RENDER: QR SCAN
-═══════════════════════════════ */
-function renderQRScan(){
-  if(S.scanPreview){
-    const d=S.scanPreview;
-    document.getElementById('app').innerHTML=`
-    <div class="modal-screen">
-      <div class="modal-header">
-        <button class="modal-back" onclick="S.scanPreview=null;nav('home')">←</button>
-        <span class="modal-title">Handoff Received</span>
-      </div>
-      <div class="scan-preview-wrap">
-        <div class="scan-preview">
-          <span class="preview-check">✅</span>
-          <h3>QR Code Scanned</h3>
-          <p>From: <strong>${esc(d.from||'—')} shift</strong></p>
-          <p>Service: <strong>${esc(d.svc||d.service||'—')}</strong></p>
-          <span class="preview-pt-count">${d.patients.length}</span>
-          <p>patient${d.patients.length!==1?'s':''} ready to load</p>
-          <div class="preview-actions">
-            <button class="btn-primary" onclick="loadScanned()">Load Patient List</button>
-            <button class="btn-secondary" onclick="S.scanPreview=null;nav('home')">Cancel</button>
-          </div>
-        </div>
-      </div>
-    </div>`;
-    return;
-  }
-
-  document.getElementById('app').innerHTML=`
-  <div class="modal-screen">
-    <div class="modal-header">
-      <button class="modal-back" onclick="nav('home')">←</button>
-      <span class="modal-title">Scan Handoff QR</span>
-    </div>
-    <div class="scan-wrap">
-      <video id="scan-video" playsinline autoplay muted></video>
-      <canvas id="scan-canvas"></canvas>
-      <div class="scan-overlay">
-        <div class="scan-frame">
-          <div class="sc sc-tl"></div><div class="sc sc-tr"></div>
-          <div class="sc sc-bl"></div><div class="sc sc-br"></div>
-          <div class="scan-line"></div>
-        </div>
-      </div>
-    </div>
-    <div class="scan-hint">Point camera at the handoff QR code from the outgoing resident's screen</div>
-    <div id="scan-error" class="scan-error"></div>
-  </div>`;
-  setTimeout(startCamera,100);
-}
-
-/* ═══════════════════════════════
-   RENDER: DISCLAIMER
-═══════════════════════════════ */
-function renderDisclaimer(){
-  document.getElementById('app').innerHTML=`
-  <div class="disclaimer-wrap">
-    <div class="disclaimer-card">
-      <span class="d-icon">⚕️</span>
-      <h1>SurgSign</h1>
-      <p class="d-sub">Surgical Shift Handoff Tool</p>
-      <div class="d-divider"></div>
-      <p class="d-text">All patient data is stored <strong>in this browser session only</strong> and is never uploaded to any server. Data is permanently cleared when the browser or tab is closed.</p>
-      <p class="d-warn">⚠️ <strong>Prototype only.</strong> HIPAA-compliant infrastructure and a signed BAA are required before use with real protected health information.</p>
-      <button class="btn-primary" onclick="nav('home')">Enter App →</button>
-    </div>
-  </div>`;
-}
-
-/* ═══════════════════════════════
-   MAIN RENDER ROUTER
-═══════════════════════════════ */
-function render(){
-  switch(S.view){
-    case'disclaimer': renderDisclaimer();break;
-    case'home': renderHome();break;
-    case'patient-form': renderForm();break;
-    case'qr-show': renderQRShow();break;
-    case'qr-scan': renderQRScan();break;
-  }
-}
-render();
-
-/* ═══════════════════════════════
-   PWA: SERVICE WORKER + INSTALL
-═══════════════════════════════ */
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+    if (isEdit && ep.id) {
+      updatePatient(ep.id, data);
+      S.selectedId = ep.id;
+    } else {
+      var newP = addPatient(data);
+      if (newP && newP.id) S.selectedId = newP.id;
+    }
+    navigate('home');
   });
 }
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();deferredPrompt=e;showInstallBanner();
-});
-function showInstallBanner(){
-  if(document.getElementById('install-banner'))return;
-  const b=document.createElement('div');
-  b.id='install-banner';
-  b.innerHTML=`<div style="display:flex;align-items:center;gap:12px;background:#122039;border:1px solid #2A4468;border-radius:14px;padding:14px 16px;box-shadow:0 4px 24px rgba(0,0,0,.5);max-width:440px;width:calc(100% - 32px);">
-    <div style="font-size:32px;flex-shrink:0;">⚕️</div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#E2EEFF;margin-bottom:2px;">Install SurgSign</div>
-    <div style="font-size:12px;color:#7B9DC0;">Add to home screen for offline access</div></div>
-    <button onclick="doInstall()" style="background:#00C8FF;color:#09152A;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Install</button>
-    <button onclick="dismissBanner()" style="background:none;border:none;color:#7B9DC0;font-size:22px;cursor:pointer;padding:0 4px;line-height:1;">×</button>
-  </div>`;
-  Object.assign(b.style,{position:'fixed',bottom:'90px',left:'0',right:'0',display:'flex',justifyContent:'center',zIndex:'500',padding:'0 16px',animation:'slideUp .3s cubic-bezier(.22,1,.36,1)'});
-  document.body.appendChild(b);
-}
-function doInstall(){
-  if(!deferredPrompt)return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(()=>{deferredPrompt=null;dismissBanner();});
-}
-function dismissBanner(){
-  const b=document.getElementById('install-banner');
-  if(b){b.style.opacity='0';b.style.transition='opacity .2s';setTimeout(()=>b.remove(),200);}
-}
-window.addEventListener('appinstalled',()=>{dismissBanner();toast('SurgSign installed!');});
 
-</script>
+function formGroup(label, inputHtml) {
+  return '<div class="form-group"><label>' + escHtml(label) + '</label>' + inputHtml + '</div>';
+}
+
+/* ── QR Show ─────────────────────────────────────────────────────────── */
+
+function renderQRShow(app) {
+  var encoded = encodeQR();
+  var byteLen = new Blob([encoded]).size;
+  var shiftCls = (S.shift || 'am').toLowerCase();
+
+  var html = '<div class="fullscreen-view">';
+  html += '<div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;padding:1rem;">';
+  html += '<button class="btn btn-ghost" id="qr-back">← Back</button>';
+  html += '<strong>QR Handoff</strong>';
+  html += '<button class="btn btn-ghost" id="qr-done">Done</button>';
+  html += '</div>';
+
+  html += '<div style="max-width:480px;margin:0 auto;padding:1rem;text-align:center;">';
+  html += '<p>';
+  html += '<span class="badge badge-shift ' + shiftCls + '">' + escHtml((S.shift || 'AM').toUpperCase()) + '</span> ';
+  if (S.service) html += escHtml(S.service) + ' &mdash; ';
+  html += S.patients.length + ' patient' + (S.patients.length !== 1 ? 's' : '');
+  html += '</p>';
+
+  html += '<div class="qr-container" id="qr-container" style="margin:1.5rem auto;"></div>';
+
+  html += '<div class="qr-info" style="margin-bottom:1rem;font-size:.85em;opacity:.7;">Payload: ' + byteLen + ' bytes</div>';
+  html += '<button class="btn btn-primary btn-sm" id="btn-copy-qr">Copy to Clipboard</button>';
+  html += '</div>';
+  html += '</div>';
+
+  app.innerHTML = html;
+
+  /* render QR code */
+  var container = app.querySelector('#qr-container');
+  if (container && typeof qrcode === 'function') {
+    try {
+      var qr = qrcode(0, 'M');
+      qr.addData(encoded);
+      qr.make();
+      container.innerHTML = qr.createSvgTag(6, 0);
+    } catch (e) {
+      container.innerHTML = '<p style="color:red;">QR generation failed: data may be too large. ' + escHtml(e.message || '') + '</p>';
+    }
+  } else if (container) {
+    container.innerHTML = '<p style="opacity:.5;">QR library not loaded.</p>';
+  }
+
+  app.querySelector('#qr-back').addEventListener('click', function () { navigate('home'); });
+  app.querySelector('#qr-done').addEventListener('click', function () { navigate('home'); });
+
+  app.querySelector('#btn-copy-qr').addEventListener('click', function () {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(encoded).then(function () {
+        alert('Copied to clipboard.');
+      });
+    } else {
+      prompt('Copy the QR data below:', encoded);
+    }
+  });
+}
+
+/* ── QR Scan ─────────────────────────────────────────────────────────── */
+
+function renderQRScan(app) {
+  var html = '<div class="fullscreen-view">';
+  html += '<div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;padding:1rem;">';
+  html += '<button class="btn btn-ghost" id="scan-back">← Back</button>';
+  html += '<strong>Scan QR Code</strong>';
+  html += '<span></span>';
+  html += '</div>';
+
+  html += '<div style="max-width:480px;margin:0 auto;padding:1rem;text-align:center;">';
+  html += '<p>Point camera at a SurgSign QR code</p>';
+  html += '<div class="scan-preview" style="margin:1rem auto;">';
+  html += '<video id="scan-video" autoplay playsinline style="width:100%;max-width:400px;border-radius:8px;background:#000;"></video>';
+  html += '</div>';
+
+  html += '<hr style="margin:1.5rem 0;opacity:.2;">';
+  html += '<p style="font-size:.85em;opacity:.7;">Or enter QR data manually:</p>';
+  html += '<textarea class="textarea-field" id="manual-qr-input" rows="4" placeholder="Paste QR string here…" style="width:100%;"></textarea>';
+  html += '<button class="btn btn-primary btn-sm" id="btn-manual-import" style="margin-top:.5rem;">Import</button>';
+  html += '</div>';
+  html += '</div>';
+
+  app.innerHTML = html;
+
+  var videoEl = app.querySelector('#scan-video');
+
+  function onScan(result) {
+    if (result && result.patients) {
+      result.patients.forEach(function (p) {
+        p.id = uid();
+        (p.issues || []).forEach(function (i) { i.id = uid(); });
+      });
+      S.patients = S.patients.concat(result.patients);
+      if (result.service) S.service = result.service;
+      if (result.shift) S.shift = result.shift;
+      S.selectedId = S.patients.length ? S.patients[0].id : null;
+      save();
+      navigate('home');
+    }
+  }
+
+  if (videoEl) {
+    startCamera(videoEl, function (rawData) {
+      try {
+        var result = typeof rawData === 'string' ? decodeQR(rawData) : rawData;
+        onScan(result);
+      } catch (e) {
+        /* ignore bad scans */
+      }
+    });
+  }
+
+  app.querySelector('#scan-back').addEventListener('click', function () {
+    stopCamera();
+    navigate('home');
+  });
+
+  app.querySelector('#btn-manual-import').addEventListener('click', function () {
+    var raw = app.querySelector('#manual-qr-input').value.trim();
+    if (!raw) return;
+    try {
+      var result = decodeQR(raw);
+      stopCamera();
+      onScan(result);
+    } catch (e) {
+      alert('Failed to parse QR data: ' + (e.message || 'Unknown error'));
+    }
+  });
+}
+
+/* ── Settings ────────────────────────────────────────────────────────── */
+
+function renderSettings(app) {
+  var html = '<div class="fullscreen-view">';
+  html += '<div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;padding:1rem;">';
+  html += '<button class="btn btn-ghost" id="settings-back">← Back</button>';
+  html += '<strong>Settings</strong>';
+  html += '<span></span>';
+  html += '</div>';
+
+  html += '<div style="max-width:540px;margin:0 auto;padding:1rem;">';
+
+  /* service */
+  html += '<div class="settings-section">';
+  html += '<h3>Service</h3>';
+  html += '<input class="input-field" id="set-service" type="text" placeholder="e.g. General Surgery" value="' + escHtml(S.service || '') + '">';
+  html += '</div>';
+
+  /* shift */
+  html += '<div class="settings-section">';
+  html += '<h3>Shift</h3>';
+  html += '<div style="display:flex;gap:.5rem;">';
+  html += '<button class="btn btn-sm' + (S.shift === 'AM' ? ' btn-primary' : ' btn-ghost') + '" id="set-shift-am">AM</button>';
+  html += '<button class="btn btn-sm' + (S.shift === 'PM' ? ' btn-primary' : ' btn-ghost') + '" id="set-shift-pm">PM</button>';
+  html += '</div>';
+  html += '</div>';
+
+  /* data management */
+  html += '<div class="settings-section">';
+  html += '<h3>Data Management</h3>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:.5rem;">';
+  html += '<button class="btn btn-sm btn-primary" id="set-export">Export JSON</button>';
+  html += '<label class="btn btn-sm btn-ghost" style="cursor:pointer;">Import JSON<input type="file" id="set-import" accept=".json,application/json" style="display:none;"></label>';
+  html += '<button class="btn btn-sm btn-ghost" id="set-demo">Load Demo Data</button>';
+  html += '</div>';
+  html += '</div>';
+
+  /* danger zone */
+  html += '<div class="settings-section" style="border:2px solid var(--danger, #d32f2f);border-radius:8px;padding:1rem;margin-top:1rem;">';
+  html += '<h3 style="color:var(--danger, #d32f2f);">Danger Zone</h3>';
+  html += '<button class="btn btn-danger btn-sm" id="set-wipe">Erase All Data</button>';
+  html += '</div>';
+
+  /* about */
+  html += '<div class="settings-section" style="margin-top:1.5rem;opacity:.7;font-size:.85em;">';
+  html += '<h3>About</h3>';
+  html += '<p>SurgSign v2.0 &mdash; Surgical Rounding &amp; Handoff Tool</p>';
+  html += '<p>Data is stored locally. No server communication.</p>';
+  html += '<p>SS2 QR format for iOS interoperability.</p>';
+  html += '</div>';
+
+  html += '</div>';
+  html += '</div>';
+
+  app.innerHTML = html;
+
+  /* events */
+  app.querySelector('#settings-back').addEventListener('click', function () {
+    navigate('home');
+  });
+
+  app.querySelector('#set-service').addEventListener('change', function () {
+    S.service = this.value.trim();
+    save();
+  });
+  app.querySelector('#set-service').addEventListener('input', function () {
+    S.service = this.value.trim();
+  });
+
+  app.querySelector('#set-shift-am').addEventListener('click', function () {
+    S.shift = 'AM';
+    save();
+    render();
+  });
+  app.querySelector('#set-shift-pm').addEventListener('click', function () {
+    S.shift = 'PM';
+    save();
+    render();
+  });
+
+  app.querySelector('#set-export').addEventListener('click', function () {
+    exportJSON();
+  });
+
+  app.querySelector('#set-import').addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+      importJSON(this.files[0]);
+    }
+  });
+
+  app.querySelector('#set-demo').addEventListener('click', function () {
+    loadDemoData();
+    render();
+  });
+
+  app.querySelector('#set-wipe').addEventListener('click', function () {
+    if (confirm('Are you sure you want to erase ALL data? This cannot be undone.')) {
+      wipeData();
+    }
+  });
+}
+  </script>
 </body>
 </html>
