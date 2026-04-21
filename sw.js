@@ -1,45 +1,83 @@
-const CACHE='surgsign-v1';
-const STATIC=[
-  '/index.html',
-  '/manifest.json',
-  '/icon.svg',
-  'https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js'
+// SurgSign Service Worker
+const CACHE_NAME = 'surgsign-v3';
+
+const PRECACHE_URLS = [
+  './index.html',
+  './manifest.json'
 ];
 
-self.addEventListener('install',e=>{
-  e.waitUntil(
-    caches.open(CACHE)
-      .then(c=>c.addAll(STATIC))
-      .then(()=>self.skipWaiting())
-  );
-});
+const CDN_URLS = [
+  'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js',
+  'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js',
+  'https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js'
+];
 
-self.addEventListener('activate',e=>{
-  e.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(
-        keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))
-      ))
-      .then(()=>self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET')return;
-  e.respondWith(
-    caches.match(e.request).then(cached=>{
-      if(cached)return cached;
-      return fetch(e.request)
-        .then(res=>{
-          if(!res||res.status!==200||res.type==='opaque')return res;
-          const clone=res.clone();
-          caches.open(CACHE).then(c=>c.put(e.request,clone));
-          return res;
-        })
-        .catch(()=>caches.match('/index.html'));
+// Install: precache local files
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_URLS);
+    }).then(() => {
+      return self.skipWaiting();
     })
   );
+});
+
+// Activate: delete old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    }).then(() => {
+      return self.clients.claim();
+    })
+  );
+});
+
+// Fetch: cache-first for same-origin and CDN, network-first for everything else
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+  const isCDN = CDN_URLS.some((cdnUrl) => event.request.url.startsWith(cdnUrl));
+
+  if (isSameOrigin || isCDN) {
+    // Cache-first strategy
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        return fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.ok) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        });
+      })
+    );
+  } else {
+    // Network-first strategy for everything else
+    event.respondWith(
+      fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.ok) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(() => {
+        return caches.match(event.request);
+      })
+    );
+  }
 });
