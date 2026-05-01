@@ -2029,11 +2029,21 @@ function renderQRScan(app) {
 
   function onScan(result) {
     if (result && result.patients) {
+      // Safety: warn before wiping an existing list so unsaved local
+      // edits aren't silently lost during a handoff.
+      if (S.patients.length > 0) {
+        var msg = 'Replace your current list of ' + S.patients.length +
+                  ' patient' + (S.patients.length !== 1 ? 's' : '') +
+                  ' with the incoming ' + result.patients.length +
+                  ' patient' + (result.patients.length !== 1 ? 's' : '') + '?\n\n' +
+                  'Your current list will be erased.';
+        if (!confirm(msg)) return;
+      }
       result.patients.forEach(function (p) {
         p.id = uid();
         (p.issues || []).forEach(function (i) { i.id = uid(); });
       });
-      S.patients = S.patients.concat(result.patients);
+      S.patients = result.patients;
       if (result.service) S.service = result.service;
       if (result.shift) S.shift = result.shift;
       S.selectedId = S.patients.length ? S.patients[0].id : null;
