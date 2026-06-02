@@ -1,0 +1,594 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E3106A39E077BDC0B70B938D /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787C844F937CCDC7DEAA9C83 /* AppState.swift */; };
+		459287BDFC42135461002C54 /* CodeStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB28BD1090349530B0A49EBE /* CodeStatus.swift */; };
+		BC5B9A1412E603222FEDA4B8 /* Patient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A963F64CE5A0AA1D56B48CD1 /* Patient.swift */; };
+		8DF8A4C0A54AB82687683227 /* PatientTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81735F6D4FCC215A4A1EE61D /* PatientTask.swift */; };
+		C76A21297C62CB6D88FA5984 /* Priority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A4DBC3DAE8AD8D720607D1 /* Priority.swift */; };
+		0D21DFFAAA3E3FFA7274FB97 /* TransferPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8347ACBDA8D8230138979A3D /* TransferPayload.swift */; };
+		C01958B47EBA785209D3627E /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F39F79F80E228DA9DBBD0FB /* PersistenceController.swift */; };
+		68CDF768D582FD81BD467F21 /* BiometricGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE6DB570D82C1E43DB401DD /* BiometricGate.swift */; };
+		CCB3E20959A23DE44982DE7D /* CompressionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168324894B20CBBC4EC8660 /* CompressionService.swift */; };
+		42A78CC3554F9EDD90D6B0AD /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 394FD16B2404C2B22D3F33F2 /* ExportImportService.swift */; };
+		165B10DA4AC87343AFBACFC3 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBADE04FCA2AFBF3EBBC85D /* KeychainService.swift */; };
+		28F0CF20AEBD318C83799EF1 /* MultipeerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812646436D27CDB4E32DE3BD /* MultipeerService.swift */; };
+		822B6C51C89A53F4E679C54C /* PurgePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8317E78691FF8ED98CF4F64 /* PurgePolicy.swift */; };
+		1B4F068318362DCEC4BA6CCE /* QRCodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D65490524C342B14CA4849 /* QRCodeService.swift */; };
+		6FFE4DB46F27F9F0CBCAFE08 /* SecureTransferCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842FE4902D36F2A587FA3E92 /* SecureTransferCrypto.swift */; };
+		4BF54C3E077EA069F61A5ADE /* TransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB002BABD7CB7B55F91DE01 /* TransferService.swift */; };
+		8C4347CAF20D52E321895611 /* SurgSignApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DDD09740CBD8855427B5896 /* SurgSignApp.swift */; };
+		ACD80401CC345ADD2AB50ADB /* AccessibilityExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7445BC4D27D1BDC83F3B2232 /* AccessibilityExtensions.swift */; };
+		451027A34A8EA8F677215206 /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC06A2336D2CD2303BD9D1E0 /* ColorTheme.swift */; };
+		2E44091ED13FA61C51279702 /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = D467BEF77A2BA8348A04AF62 /* DateFormatters.swift */; };
+		5AC5EEC18AD8D0B92A92B508 /* PODCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3261AB52ABDB180C86D883 /* PODCalculator.swift */; };
+		5FEC8D409501FBCE391BC6F0 /* PatientFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDB81C56FC57BEB6B9A3149 /* PatientFormViewModel.swift */; };
+		D558CF904A8D9A0A0BAF66C5 /* PatientListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E2951216F8C6128F4E712 /* PatientListViewModel.swift */; };
+		3785D85916D8DEC0522830DB /* HandoffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCE9A8EB423A45992140923 /* HandoffView.swift */; };
+		0AD2FFCDC19008B68996551D /* QRCodeImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42791352310F90B13BE2718 /* QRCodeImageView.swift */; };
+		687F1F8BD09587ABB06E2B0C /* ScanPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445C8D9EBC7AA279274BD4D6 /* ScanPreviewView.swift */; };
+		98DC1603B7B34D0DEF6433C6 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCE787D77656378A8DDA80B /* ScanView.swift */; };
+		1C967BC371096A039D850C66 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA07218497338F259D18E71 /* ContentView.swift */; };
+		1C2581C3BA9B1D24F20F9B10 /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18A67B3B6E312D5FF928546 /* DisclaimerView.swift */; };
+		9B60B56BCDACD48EF0E71788 /* PatientFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0919DA1C6126F1FD9A7DCA7E /* PatientFormView.swift */; };
+		348F87CF2EE6D68AC24E76CA /* TaskListSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8A5F200C4B9B6AC448A1CA /* TaskListSectionView.swift */; };
+		4618629BA048B85268B72900 /* TaskRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E412E020EC8BFB08CB91A3 /* TaskRowView.swift */; };
+		AED52126EB2932E189801A25 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2574716868A15A03D3DC905 /* EmptyStateView.swift */; };
+		80A1EE1B8FBB7B38302CB929 /* PatientCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB9DEAFBB4B29B0954EE62A /* PatientCardView.swift */; };
+		35903DED6615B1434BCCB6E1 /* PatientListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD03331503DB48414D94AACB /* PatientListView.swift */; };
+		80708002EF14427FA9AAE673 /* ShiftToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA654130C26E5CA24520937 /* ShiftToggleView.swift */; };
+		7B209CC64A2F3B38252C68D5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111029B35464FD81393D2118 /* SettingsView.swift */; };
+		89F79E337852881F6B729547 /* CodeStatusBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E07A95DB986CDBCF08ECB56 /* CodeStatusBadgeView.swift */; };
+		FF78472A8246B74B4CC8B757 /* PODBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F6AC2C0C4ABDB0FEB4657F /* PODBadgeView.swift */; };
+		A5D2A0E434E21E3FE613D033 /* PriorityBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0344DBE53ED02DAF987ED5A0 /* PriorityBarView.swift */; };
+		EB3055DAD513731D4A157243 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F48DF4F3860AD99D8ED0721 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A709AA00AD62683D23D59186 /* SurgSign.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SurgSign.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E11324A5BC4F0A7FA438F642 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3F48DF4F3860AD99D8ED0721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		787C844F937CCDC7DEAA9C83 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		BB28BD1090349530B0A49EBE /* CodeStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeStatus.swift; sourceTree = "<group>"; };
+		A963F64CE5A0AA1D56B48CD1 /* Patient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Patient.swift; sourceTree = "<group>"; };
+		81735F6D4FCC215A4A1EE61D /* PatientTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatientTask.swift; sourceTree = "<group>"; };
+		77A4DBC3DAE8AD8D720607D1 /* Priority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Priority.swift; sourceTree = "<group>"; };
+		8347ACBDA8D8230138979A3D /* TransferPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferPayload.swift; sourceTree = "<group>"; };
+		9F39F79F80E228DA9DBBD0FB /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		3BE6DB570D82C1E43DB401DD /* BiometricGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricGate.swift; sourceTree = "<group>"; };
+		1168324894B20CBBC4EC8660 /* CompressionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompressionService.swift; sourceTree = "<group>"; };
+		394FD16B2404C2B22D3F33F2 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
+		ACBADE04FCA2AFBF3EBBC85D /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		812646436D27CDB4E32DE3BD /* MultipeerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerService.swift; sourceTree = "<group>"; };
+		F8317E78691FF8ED98CF4F64 /* PurgePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurgePolicy.swift; sourceTree = "<group>"; };
+		A7D65490524C342B14CA4849 /* QRCodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeService.swift; sourceTree = "<group>"; };
+		842FE4902D36F2A587FA3E92 /* SecureTransferCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureTransferCrypto.swift; sourceTree = "<group>"; };
+		1BB002BABD7CB7B55F91DE01 /* TransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferService.swift; sourceTree = "<group>"; };
+		9DDD09740CBD8855427B5896 /* SurgSignApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurgSignApp.swift; sourceTree = "<group>"; };
+		7445BC4D27D1BDC83F3B2232 /* AccessibilityExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityExtensions.swift; sourceTree = "<group>"; };
+		BC06A2336D2CD2303BD9D1E0 /* ColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTheme.swift; sourceTree = "<group>"; };
+		D467BEF77A2BA8348A04AF62 /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
+		EE3261AB52ABDB180C86D883 /* PODCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PODCalculator.swift; sourceTree = "<group>"; };
+		9CDB81C56FC57BEB6B9A3149 /* PatientFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatientFormViewModel.swift; sourceTree = "<group>"; };
+		4C6E2951216F8C6128F4E712 /* PatientListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatientListViewModel.swift; sourceTree = "<group>"; };
+		6CCE9A8EB423A45992140923 /* HandoffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandoffView.swift; sourceTree = "<group>"; };
+		E42791352310F90B13BE2718 /* QRCodeImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeImageView.swift; sourceTree = "<group>"; };
+		445C8D9EBC7AA279274BD4D6 /* ScanPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanPreviewView.swift; sourceTree = "<group>"; };
+		ECCE787D77656378A8DDA80B /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
+		AEA07218497338F259D18E71 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F18A67B3B6E312D5FF928546 /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
+		0919DA1C6126F1FD9A7DCA7E /* PatientFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatientFormView.swift; sourceTree = "<group>"; };
+		BF8A5F200C4B9B6AC448A1CA /* TaskListSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListSectionView.swift; sourceTree = "<group>"; };
+		91E412E020EC8BFB08CB91A3 /* TaskRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRowView.swift; sourceTree = "<group>"; };
+		A2574716868A15A03D3DC905 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		0BB9DEAFBB4B29B0954EE62A /* PatientCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatientCardView.swift; sourceTree = "<group>"; };
+		AD03331503DB48414D94AACB /* PatientListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatientListView.swift; sourceTree = "<group>"; };
+		1EA654130C26E5CA24520937 /* ShiftToggleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftToggleView.swift; sourceTree = "<group>"; };
+		111029B35464FD81393D2118 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0E07A95DB986CDBCF08ECB56 /* CodeStatusBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeStatusBadgeView.swift; sourceTree = "<group>"; };
+		20F6AC2C0C4ABDB0FEB4657F /* PODBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PODBadgeView.swift; sourceTree = "<group>"; };
+		0344DBE53ED02DAF987ED5A0 /* PriorityBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityBarView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		54C4C33D703B692F3E5BFD8F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		169508759E24F158293BCB1B = {
+			isa = PBXGroup;
+			children = (
+				D3EFBFF2EE7B56312DD8EE7F /* SurgSign */,
+				8C1969BC5989E871C77EB3CC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8C1969BC5989E871C77EB3CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A709AA00AD62683D23D59186 /* SurgSign.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D3EFBFF2EE7B56312DD8EE7F /* SurgSign */ = {
+			isa = PBXGroup;
+			children = (
+				212B3758D9A02E43B3111A45 /* App */,
+				537589441B76EA165F23EABC /* Models */,
+				D7DA3CB0D36D72F721F6147D /* Persistence */,
+				B6346D3B3FFCEA4422AAA296 /* Services */,
+				492F6F6D812530E45586FBC3 /* Utilities */,
+				006C33387688E73417DA85DD /* ViewModels */,
+				C3E649AE6FBC41A1C5956252 /* Views */,
+				9DDD09740CBD8855427B5896 /* SurgSignApp.swift */,
+				3F48DF4F3860AD99D8ED0721 /* Assets.xcassets */,
+				E11324A5BC4F0A7FA438F642 /* Info.plist */,
+			);
+			path = SurgSign;
+			sourceTree = "<group>";
+		};
+		212B3758D9A02E43B3111A45 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				787C844F937CCDC7DEAA9C83 /* AppState.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		537589441B76EA165F23EABC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BB28BD1090349530B0A49EBE /* CodeStatus.swift */,
+				A963F64CE5A0AA1D56B48CD1 /* Patient.swift */,
+				81735F6D4FCC215A4A1EE61D /* PatientTask.swift */,
+				77A4DBC3DAE8AD8D720607D1 /* Priority.swift */,
+				8347ACBDA8D8230138979A3D /* TransferPayload.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		D7DA3CB0D36D72F721F6147D /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				9F39F79F80E228DA9DBBD0FB /* PersistenceController.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		B6346D3B3FFCEA4422AAA296 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				3BE6DB570D82C1E43DB401DD /* BiometricGate.swift */,
+				1168324894B20CBBC4EC8660 /* CompressionService.swift */,
+				394FD16B2404C2B22D3F33F2 /* ExportImportService.swift */,
+				ACBADE04FCA2AFBF3EBBC85D /* KeychainService.swift */,
+				812646436D27CDB4E32DE3BD /* MultipeerService.swift */,
+				F8317E78691FF8ED98CF4F64 /* PurgePolicy.swift */,
+				A7D65490524C342B14CA4849 /* QRCodeService.swift */,
+				842FE4902D36F2A587FA3E92 /* SecureTransferCrypto.swift */,
+				1BB002BABD7CB7B55F91DE01 /* TransferService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		492F6F6D812530E45586FBC3 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				7445BC4D27D1BDC83F3B2232 /* AccessibilityExtensions.swift */,
+				BC06A2336D2CD2303BD9D1E0 /* ColorTheme.swift */,
+				D467BEF77A2BA8348A04AF62 /* DateFormatters.swift */,
+				EE3261AB52ABDB180C86D883 /* PODCalculator.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		006C33387688E73417DA85DD /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				9CDB81C56FC57BEB6B9A3149 /* PatientFormViewModel.swift */,
+				4C6E2951216F8C6128F4E712 /* PatientListViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		C3E649AE6FBC41A1C5956252 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6093A25E4DB7F23BA9622751 /* Handoff */,
+				FEF82E350E1F7A04FFE2E762 /* Main */,
+				4E62E1C50AD98BEA094E981B /* PatientForm */,
+				25F260516012F9EF7834E521 /* PatientList */,
+				A27B00A2F6C76B6595B1CE6B /* Settings */,
+				42651EBFD43076EFCE4396EB /* Shared */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6093A25E4DB7F23BA9622751 /* Handoff */ = {
+			isa = PBXGroup;
+			children = (
+				6CCE9A8EB423A45992140923 /* HandoffView.swift */,
+				E42791352310F90B13BE2718 /* QRCodeImageView.swift */,
+				445C8D9EBC7AA279274BD4D6 /* ScanPreviewView.swift */,
+				ECCE787D77656378A8DDA80B /* ScanView.swift */,
+			);
+			path = Handoff;
+			sourceTree = "<group>";
+		};
+		FEF82E350E1F7A04FFE2E762 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				AEA07218497338F259D18E71 /* ContentView.swift */,
+				F18A67B3B6E312D5FF928546 /* DisclaimerView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		4E62E1C50AD98BEA094E981B /* PatientForm */ = {
+			isa = PBXGroup;
+			children = (
+				0919DA1C6126F1FD9A7DCA7E /* PatientFormView.swift */,
+				BF8A5F200C4B9B6AC448A1CA /* TaskListSectionView.swift */,
+				91E412E020EC8BFB08CB91A3 /* TaskRowView.swift */,
+			);
+			path = PatientForm;
+			sourceTree = "<group>";
+		};
+		25F260516012F9EF7834E521 /* PatientList */ = {
+			isa = PBXGroup;
+			children = (
+				A2574716868A15A03D3DC905 /* EmptyStateView.swift */,
+				0BB9DEAFBB4B29B0954EE62A /* PatientCardView.swift */,
+				AD03331503DB48414D94AACB /* PatientListView.swift */,
+				1EA654130C26E5CA24520937 /* ShiftToggleView.swift */,
+			);
+			path = PatientList;
+			sourceTree = "<group>";
+		};
+		A27B00A2F6C76B6595B1CE6B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				111029B35464FD81393D2118 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		42651EBFD43076EFCE4396EB /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				0E07A95DB986CDBCF08ECB56 /* CodeStatusBadgeView.swift */,
+				20F6AC2C0C4ABDB0FEB4657F /* PODBadgeView.swift */,
+				0344DBE53ED02DAF987ED5A0 /* PriorityBarView.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BEA3731F6265FF04FE9B5B43 /* SurgSign */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB19323742E2F4C9BAB7CDDB /* Build configuration list for PBXNativeTarget "SurgSign" */;
+			buildPhases = (
+				06CD14B2664DDAD7E3986742 /* Sources */,
+				54C4C33D703B692F3E5BFD8F /* Frameworks */,
+				0EBF73B6FABBCEA935EAB415 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SurgSign;
+			productName = SurgSign;
+			productReference = A709AA00AD62683D23D59186 /* SurgSign.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		71D92B3557A9A5F06A1B8BE5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					BEA3731F6265FF04FE9B5B43 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 4660DFD8E470984470C2D6A1 /* Build configuration list for PBXProject "SurgSign" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 169508759E24F158293BCB1B;
+			productRefGroup = 8C1969BC5989E871C77EB3CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BEA3731F6265FF04FE9B5B43 /* SurgSign */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0EBF73B6FABBCEA935EAB415 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB3055DAD513731D4A157243 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		06CD14B2664DDAD7E3986742 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E3106A39E077BDC0B70B938D /* AppState.swift in Sources */,
+				459287BDFC42135461002C54 /* CodeStatus.swift in Sources */,
+				BC5B9A1412E603222FEDA4B8 /* Patient.swift in Sources */,
+				8DF8A4C0A54AB82687683227 /* PatientTask.swift in Sources */,
+				C76A21297C62CB6D88FA5984 /* Priority.swift in Sources */,
+				0D21DFFAAA3E3FFA7274FB97 /* TransferPayload.swift in Sources */,
+				C01958B47EBA785209D3627E /* PersistenceController.swift in Sources */,
+				68CDF768D582FD81BD467F21 /* BiometricGate.swift in Sources */,
+				CCB3E20959A23DE44982DE7D /* CompressionService.swift in Sources */,
+				42A78CC3554F9EDD90D6B0AD /* ExportImportService.swift in Sources */,
+				165B10DA4AC87343AFBACFC3 /* KeychainService.swift in Sources */,
+				28F0CF20AEBD318C83799EF1 /* MultipeerService.swift in Sources */,
+				822B6C51C89A53F4E679C54C /* PurgePolicy.swift in Sources */,
+				1B4F068318362DCEC4BA6CCE /* QRCodeService.swift in Sources */,
+				6FFE4DB46F27F9F0CBCAFE08 /* SecureTransferCrypto.swift in Sources */,
+				4BF54C3E077EA069F61A5ADE /* TransferService.swift in Sources */,
+				8C4347CAF20D52E321895611 /* SurgSignApp.swift in Sources */,
+				ACD80401CC345ADD2AB50ADB /* AccessibilityExtensions.swift in Sources */,
+				451027A34A8EA8F677215206 /* ColorTheme.swift in Sources */,
+				2E44091ED13FA61C51279702 /* DateFormatters.swift in Sources */,
+				5AC5EEC18AD8D0B92A92B508 /* PODCalculator.swift in Sources */,
+				5FEC8D409501FBCE391BC6F0 /* PatientFormViewModel.swift in Sources */,
+				D558CF904A8D9A0A0BAF66C5 /* PatientListViewModel.swift in Sources */,
+				3785D85916D8DEC0522830DB /* HandoffView.swift in Sources */,
+				0AD2FFCDC19008B68996551D /* QRCodeImageView.swift in Sources */,
+				687F1F8BD09587ABB06E2B0C /* ScanPreviewView.swift in Sources */,
+				98DC1603B7B34D0DEF6433C6 /* ScanView.swift in Sources */,
+				1C967BC371096A039D850C66 /* ContentView.swift in Sources */,
+				1C2581C3BA9B1D24F20F9B10 /* DisclaimerView.swift in Sources */,
+				9B60B56BCDACD48EF0E71788 /* PatientFormView.swift in Sources */,
+				348F87CF2EE6D68AC24E76CA /* TaskListSectionView.swift in Sources */,
+				4618629BA048B85268B72900 /* TaskRowView.swift in Sources */,
+				AED52126EB2932E189801A25 /* EmptyStateView.swift in Sources */,
+				80A1EE1B8FBB7B38302CB929 /* PatientCardView.swift in Sources */,
+				35903DED6615B1434BCCB6E1 /* PatientListView.swift in Sources */,
+				80708002EF14427FA9AAE673 /* ShiftToggleView.swift in Sources */,
+				7B209CC64A2F3B38252C68D5 /* SettingsView.swift in Sources */,
+				89F79E337852881F6B729547 /* CodeStatusBadgeView.swift in Sources */,
+				FF78472A8246B74B4CC8B757 /* PODBadgeView.swift in Sources */,
+				A5D2A0E434E21E3FE613D033 /* PriorityBarView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5AED979B3019B96D4E8B8109 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALIDATE_PRODUCT = NO;
+			};
+			name = Debug;
+		};
+		50333732F713A1349553A447 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		859A4125D148C1312D953DF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SurgSign/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.surgsign.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C1D6697F536BE19B22FB1C28 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SurgSign/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.surgsign.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4660DFD8E470984470C2D6A1 /* Build configuration list for PBXProject "SurgSign" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AED979B3019B96D4E8B8109 /* Debug */,
+				50333732F713A1349553A447 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB19323742E2F4C9BAB7CDDB /* Build configuration list for PBXNativeTarget "SurgSign" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				859A4125D148C1312D953DF5 /* Debug */,
+				C1D6697F536BE19B22FB1C28 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 71D92B3557A9A5F06A1B8BE5 /* Project object */;
+}
